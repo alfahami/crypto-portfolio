@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import com.codelogium.exchangerateservice.exception.ExternalApiException;
+import com.codelogium.exchangerateservice.mapper.CryptoResponseMapper;
 
 import reactor.core.publisher.Mono;
 
@@ -18,8 +19,12 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
     private WebClient webClient;
 
     @Override
+    public Mono<CryptoResponseMapper> retrivePrice() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    @Override
     public Mono<ResponseEntity<String>> getAllData() {
-
         // Asynchronously fetches cryptocurrency listings using WebClient, with error handling and reactive response processing
         Mono<ResponseEntity<String>> result = webClient.get() 
                 .uri("/v1/cryptocurrency/listings/latest")
