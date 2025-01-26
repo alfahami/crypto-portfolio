@@ -16,28 +16,13 @@ public class AppConfig {
 
     @Value("$external-api.base-url")
     private String baseUrl;
-
-    /*
-     * As we will configure Spring context manually (e.g., using AnnotationConfigApplicationContext), we need to declare WebClient.Builder bean to avoid Spring may not have enabled the automatic configuration for WebClient.Builder.
-     */
-    @Bean
-    public WebClient.Builder webClientBuilder() {
-        return WebClient.builder();
-    }
-    // This bean is necessary to resolve placeholders in @Value annotations
+   
+    // Defines a bean to create ad configure a WebClient instance
     @Bean
     public WebClient webClient(WebClient.Builder builder) {
         return builder
                     .baseUrl(baseUrl)
                     .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .build();
-    }
-
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
-    }
-
-    public String getBaseUrl() { return this.baseUrl; }
-    
+    }    
 }
