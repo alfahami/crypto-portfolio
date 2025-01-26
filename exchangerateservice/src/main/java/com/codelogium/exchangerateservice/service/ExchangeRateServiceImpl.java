@@ -1,16 +1,16 @@
 package com.codelogium.exchangerateservice.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import lombok.AllArgsConstructor;
 import reactor.core.publisher.Mono;
 
 @Service
-@AllArgsConstructor
 public class ExchangeRateServiceImpl implements ExchangeRateService {
 
+    @Autowired
     private WebClient webClient;
 
     @Override

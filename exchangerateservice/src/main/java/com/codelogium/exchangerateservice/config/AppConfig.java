@@ -13,7 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @PropertySource("classpath:application.properties") 
 public class AppConfig {
 
-    @Value("$external-api.base-url")
+    @Value("${external-api.base-url}")
     private String baseUrl;
     
     @Value("${external-api.key}")
