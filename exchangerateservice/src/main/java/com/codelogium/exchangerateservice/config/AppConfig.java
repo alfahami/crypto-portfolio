@@ -9,8 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
-//Explicitly loading the properties to the context 
-@PropertySource("classpath:application.properties") 
 public class AppConfig {
 
     @Value("${external-api.base-url}")
