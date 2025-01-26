@@ -1,4 +1,4 @@
-package com.example.portfolioservice;
+package com.codelogium.portfolioservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

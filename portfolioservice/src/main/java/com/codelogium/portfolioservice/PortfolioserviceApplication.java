@@ -1,13 +1,13 @@
-package com.example.exchangerateservice;
+package com.codelogium.portfolioservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ExchangerateserviceApplication {
+public class PortfolioserviceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ExchangerateserviceApplication.class, args);
+		SpringApplication.run(PortfolioserviceApplication.class, args);
 	}
 
 }
