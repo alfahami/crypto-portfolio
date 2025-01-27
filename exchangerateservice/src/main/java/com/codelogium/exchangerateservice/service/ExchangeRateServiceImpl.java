@@ -18,9 +18,7 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
     private WebClient webClient;
 
     /**
-     * Fetches cryptocurrency price data using WebClient, processes the raw JSON
-     * response, and maps it to a CryptoPrice object containing the symbol, base
-     * currency, and price.
+     * Fetches cryptocurrency price data using WebClient, processes the raw JSON response, and maps it to a CryptoPrice object containing the symbol, base currency, and price.
      * Handles errors during the request and data mapping gracefully.
      * 
      * @param symbol : The symbol of the cryptocurrency (e.g., BTC, ETH).
