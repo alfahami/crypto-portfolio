@@ -3,18 +3,18 @@ package com.codelogium.exchangerateservice.mapper;
 import java.math.BigDecimal;
 
 public class CryptoResponseMapper {
+    private String symbol;
     private String baseCurrency;
     private BigDecimal price;
-    private String symbol;
 
 
     public CryptoResponseMapper() {
     }
 
     public CryptoResponseMapper(String symbol, String baseCurrency, BigDecimal price) {
-        this.baseCurrency = baseCurrency;
-        this.price = price;
         this.symbol = symbol;
+        this.price = price;
+        this.baseCurrency = baseCurrency;
     }
 
     public String getBaseCurrency() {
