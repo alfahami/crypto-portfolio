@@ -11,7 +11,7 @@ public class CryptoResponseMapper {
     public CryptoResponseMapper() {
     }
 
-    public CryptoResponseMapper(String baseCurrency, BigDecimal price, String symbol) {
+    public CryptoResponseMapper(String symbol, String baseCurrency, BigDecimal price) {
         this.baseCurrency = baseCurrency;
         this.price = price;
         this.symbol = symbol;
