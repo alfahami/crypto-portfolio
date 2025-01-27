@@ -23,8 +23,8 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
      * currency, and price.
      * Handles errors during the request and data mapping gracefully.
      * 
-     * @param symbol       The symbol of the cryptocurrency (e.g., BTC, ETH).
-     * @param baseCurrency The base currency for conversion (e.g., USD, EUR).
+     * @param symbol : The symbol of the cryptocurrency (e.g., BTC, ETH).
+     * @param baseCurrency: The base currency for conversion (e.g., USD, EUR).
      * @return A Mono emitting a CryptoPrice object with the requeste details.
      */
     @Override
@@ -49,15 +49,15 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
 
     @Override
     public Mono<ResponseEntity<String>> getAllData() {
-        // Asynchronously fetches cryptocurrency listings using WebClient, with error
-        // handling and reactive response processing
+        /*
+        * Asynchronously fetches cryptocurrency listings using WebClient, with error handling and reactive response processing
+        */
         Mono<ResponseEntity<String>> result = webClient.get()
                 .uri("/v1/cryptocurrency/listings/latest")
                 .retrieve()
                 .onStatus(HttpStatusCode::isError,
                         clientResponse -> Mono.error(new ExternalApiException(
-                                "Failed to retrieve latest crypto listing, please try again!"))) // intercept and handle
-                                                                                                 // any http status code
+                                "Failed to retrieve latest crypto listing, please try again!"))) //intercept and handle any http status code
                 .toEntity(String.class);
 
         return result;
