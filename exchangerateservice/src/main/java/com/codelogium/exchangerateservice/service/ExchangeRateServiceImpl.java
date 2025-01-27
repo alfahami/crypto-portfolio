@@ -26,21 +26,21 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
      * @return A Mono emitting a CryptoPrice object with the requeste details.
      */
     @Override
-    public Mono<CryptoResponseMapper> retrivePrice(String symbol, String baseCurrency) {
+    public Mono<CryptoResponseMapper> retrivePrice(String symbol, String base) {
         return webClient.get().uri(
                 uriBuilder -> uriBuilder.path("/v1/cryptocurrency/quotes/latest")
                         .queryParam("symbol", symbol)
-                        .queryParam("convert", baseCurrency)
+                        .queryParam("convert", base)
                         .build())
                 .retrieve()
                 .bodyToMono(JsonNode.class)
                 .doOnError(error -> new ExternalApiException(
                         "Error while fetching data." + error.getMessage() + "\nPlease try again")) // doOnError for general error handling accross the pipeline
                 .map(response -> {
-                    JsonNode quote = response.path("data").path(symbol).path("quote").path(baseCurrency);
+                    JsonNode quote = response.path("data").path(symbol).path("quote").path(base);
                     return new CryptoResponseMapper(
                             symbol,
-                            baseCurrency,
+                            base,
                             quote.path("price").decimalValue());
                 });
     }
