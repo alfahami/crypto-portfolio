@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/exchange-rate")
 public class ExchangeRateController {
     
-    
     private ExchangeRateService exchangeRateService;
 
     @GetMapping("/latest")

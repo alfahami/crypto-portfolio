@@ -9,6 +9,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class CryptoResponseMapper {
     private String symbol;
-    private String baseCurrency;
+    private String base;
     private BigDecimal price;
 }
