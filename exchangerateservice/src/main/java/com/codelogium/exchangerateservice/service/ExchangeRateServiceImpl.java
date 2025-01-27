@@ -5,7 +5,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import com.codelogium.exchangerateservice.exception.ExternalApiException;
+
+import com.codelogium.exchangerateservice.exception.ClientException;
 import com.codelogium.exchangerateservice.mapper.CryptoResponseMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -14,8 +15,8 @@ import reactor.core.publisher.Mono;
 @Service
 public class ExchangeRateServiceImpl implements ExchangeRateService {
 
-    @Autowired
-    private WebClient webClient;
+        @Autowired
+        private WebClient webClient;
 
     /**
      * Fetches cryptocurrency price data using WebClient, processes the raw JSON response, and maps it to a CryptoPrice object containing the symbol, base currency, and price.
@@ -33,9 +34,17 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
                         .queryParam("convert", base)
                         .build())
                 .retrieve()
+                .onStatus( 
+                        HttpStatusCode::isError, 
+                        clientResponse -> 
+                                clientResponse.bodyToMono(String.class)
+                                .flatMap(errorBody -> {
+                                        //Wrap the WebClient error into ClientException
+                                        HttpStatusCode statusCode = clientResponse.statusCode();
+                                        return Mono.error(new ClientException(statusCode, "API error: " + errorBody));
+                                }) //transform the HTTP error response into a custom exception (ClientException).
+                        )
                 .bodyToMono(JsonNode.class)
-                .doOnError(error -> new ExternalApiException(
-                        "Error while fetching data." + error.getMessage() + "\nPlease try again")) // doOnError for general error handling accross the pipeline
                 .map(response -> {
                     JsonNode quote = response.path("data").path(symbol).path("quote").path(base);
                     return new CryptoResponseMapper(
@@ -45,19 +54,27 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
                 });
     }
 
-    @Override
-    public Mono<ResponseEntity<String>> getAllData() {
-        /*
-        * Asynchronously fetches cryptocurrency listings using WebClient, with error handling and reactive response processing
-        */
-        Mono<ResponseEntity<String>> result = webClient.get()
-                .uri("/v1/cryptocurrency/listings/latest")
-                .retrieve()
-                .onStatus(HttpStatusCode::isError,
-                        clientResponse -> Mono.error(new ExternalApiException(
-                                "Failed to retrieve latest crypto listing, please try again!"))) //intercept and handle any http status code
-                .toEntity(String.class);
+        @Override
+        public Mono<ResponseEntity<String>> getAllData() {
+                /*
+                 * Asynchronously fetches cryptocurrency listings using WebClient, with error
+                 * handling and reactive response processing
+                 */
+                Mono<ResponseEntity<String>> result = webClient.get()
+                                .uri("/v1/cryptocurrency/listings/latest")
+                                .retrieve()
+                                .onStatus( 
+                        HttpStatusCode::isError, 
+                        clientResponse -> 
+                                clientResponse.bodyToMono(String.class)
+                                .flatMap(errorBody -> {
+                                        //Wrap the WebClient error into ClientException
+                                        HttpStatusCode statusCode = clientResponse.statusCode();
+                                        return Mono.error(new ClientException(statusCode, "API error: " + errorBody));
+                                }) //transform the HTTP error response into a custom exception (ClientException).
+                        )
+                        .toEntity(String.class);
 
-        return result;
-    }
+                return result;
+        }
 }
