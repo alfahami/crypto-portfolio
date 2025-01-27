@@ -21,7 +21,7 @@ public class ExchangeRateController {
     
     private ExchangeRateService exchangeRateService;
 
-    @GetMapping("/")
+    @GetMapping("/latest")
     public Mono<ResponseEntity<String>> getRawData() {
         return exchangeRateService.getAllData();
     }
