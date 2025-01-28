@@ -10,12 +10,13 @@ import com.codelogium.exchangerateservice.exception.ClientException;
 import com.codelogium.exchangerateservice.mapper.CryptoResponseMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import lombok.AllArgsConstructor;
 import reactor.core.publisher.Mono;
 
 @Service
+@AllArgsConstructor
 public class ExchangeRateServiceImpl implements ExchangeRateService {
 
-        @Autowired
         private WebClient webClient;
 
     /**
