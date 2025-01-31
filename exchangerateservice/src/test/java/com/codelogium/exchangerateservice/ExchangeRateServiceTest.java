@@ -6,7 +6,9 @@ import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,8 +33,8 @@ public class ExchangeRateServiceTest {
   private static MockWebServer mockWebServer;
   private static ExchangeRateService exchangeRateService;
 
-  @BeforeAll
-  static void setUp() throws Exception {
+  @BeforeEach
+  void setUp() throws Exception {
     mockWebServer = new MockWebServer();
     mockWebServer.start(9090);
 
@@ -46,8 +48,8 @@ public class ExchangeRateServiceTest {
     exchangeRateService = new ExchangeRateServiceImpl(mockedWebClient);
   }
 
-  @AfterAll
-  static void tearDown() throws IOException {
+  @AfterEach
+  void tearDown() throws IOException {
     // Close the mock server after the tests are done to free up resources.
     mockWebServer.close();
   }
@@ -113,8 +115,7 @@ public class ExchangeRateServiceTest {
     // Define the mocked response that will be returned by the mock server.
     String mockResponse = getMockedResponse();
 
-    // Enqueue a mock response to be returned when the WebClient performs the
-    // GETrequest.
+    // Enqueue a mock response to be returned when the WebClient performs the GET request.
     mockWebServer.enqueue(
         new MockResponse().setResponseCode(HttpStatus.OK.value())
             .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -161,8 +162,7 @@ public class ExchangeRateServiceTest {
             .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
     Mono<ResponseEntity<String>> result = exchangeRateService.getAllData();
-    // Done in the sake of learning, checking the returned message that cmc defined
-    // themselves
+    // Done in the sake of learning, checking the returned message that cmc defined themselves
     StepVerifier.create(result)
         .expectErrorMatches(throwable -> {
           if (throwable instanceof ClientException) {
