@@ -1,5 +1,5 @@
 package com.codelogium.exchangerateservice;
 
-public class exchangeRateIntegrationTest {
+public class ExchangeRateIntegrationTest {
     
 }
