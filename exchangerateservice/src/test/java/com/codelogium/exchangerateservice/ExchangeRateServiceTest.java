@@ -36,16 +36,11 @@ public class ExchangeRateServiceTest {
     mockWebServer = new MockWebServer();
     mockWebServer.start(9090);
 
-    // Create a WebClient instance with the mock server's base URL, this simulates
-    // the actual WebClient in exchangerate service.
+    // Create a WebClient that simulates the actual WebClient in exchangerate service.
     WebClient mockedWebClient = WebClient.builder()
         .codecs(configurer -> configurer.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder()))
         .baseUrl(mockWebServer.url("/").toString())
         .build();
-
-    // Retrieve the base URL for logging and validation purposes.
-    String baseUrl = mockWebServer.url("/").toString();
-    System.out.println("Base Url :" + baseUrl);
 
     // Initialize the ExchangeRateService with the mocked WebClient.
     exchangeRateService = new ExchangeRateServiceImpl(mockedWebClient);
@@ -92,6 +87,26 @@ public class ExchangeRateServiceTest {
         })
         .verifyComplete();
   }
+
+  @Test
+  void getPriceErrorTest() {
+    String base = "MAD";
+    String symbol = "BTC";
+    mockWebServer.enqueue(
+        new MockResponse().setResponseCode(429)
+            .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .setBody("{\"status\":{\"error_message\":\"You've exceeded your API Key's daily rate limit.\"}}")
+            .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+
+    Mono<CryptoResponseMapper> result = exchangeRateService.retrivePrice(symbol, base);
+
+    // Checking the error code using expectErrorMatches
+    StepVerifier.create(result)
+        .expectErrorMatches(throwable -> throwable instanceof ClientException &&
+            ((ClientException) throwable).getStatus().is4xxClientError())
+        .verify();
+  }
+  
 
   @Test
   void getAllDataSuccessTest() {
