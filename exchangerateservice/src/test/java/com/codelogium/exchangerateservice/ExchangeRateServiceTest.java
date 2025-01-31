@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.codelogium.exchangerateservice.exception.ClientException;
 import com.codelogium.exchangerateservice.service.ExchangeRateService;
 import com.codelogium.exchangerateservice.service.ExchangeRateServiceImpl;
 
@@ -51,7 +52,7 @@ public class ExchangeRateServiceTest {
   }
 
   @Test
-  public void getAllDataSuccessTest() {
+  void getAllDataSuccessTest() {
     // Define the mocked response that will be returned by the mock server.
     String mockResponse = getMockedResponse();
 
@@ -66,7 +67,29 @@ public class ExchangeRateServiceTest {
 
     // Verify that the result matches the expected response. StepVerifier is used for reactive streams.
     StepVerifier.create(result)
-        .expectNextMatches(responseData -> responseData.getBody().contains(mockResponse));
+        .expectNextMatches(responseData -> responseData.getBody().contains(mockResponse)).verifyComplete();
+
+  }
+
+  @Test
+  void getAllDataErrorTest() {
+
+    /*
+     * Test of 500 INTERNAL SERVER ERROR | 4xx client Error can be test by setting the response to a client Error(ex: 404) and in stepVerfier : is4xxServerError
+     * 
+     */
+    mockWebServer.enqueue(
+      new MockResponse().setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody("{\"status\":{\"error_message\":\"Internal Server Error\"}}")
+    );
+
+    Mono<ResponseEntity<String>> result = exchangeRateService.getAllData();
+
+    StepVerifier.create(result)
+                .expectErrorMatches(throwable -> 
+                  throwable instanceof ClientException &&
+                  ((ClientException) throwable).getStatus().is5xxServerError()).verify();  
 
   }
 
