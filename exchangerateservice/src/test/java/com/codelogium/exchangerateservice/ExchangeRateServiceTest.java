@@ -1,6 +1,7 @@
 package com.codelogium.exchangerateservice;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,12 +11,17 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.codelogium.exchangerateservice.exception.ClientException;
+import com.codelogium.exchangerateservice.mapper.CryptoResponseMapper;
 import com.codelogium.exchangerateservice.service.ExchangeRateService;
 import com.codelogium.exchangerateservice.service.ExchangeRateServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -36,7 +42,10 @@ public class ExchangeRateServiceTest {
 
     // Create a WebClient instance with the mock server's base URL, this simulates
     // the actual WebClient in exchangerate service.
-    WebClient mockedWebClient = WebClient.builder().baseUrl(mockWebServer.url("/").toString()).build();
+    WebClient mockedWebClient = WebClient.builder()
+        .codecs(configurer -> configurer.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder()))
+        .baseUrl(mockWebServer.url("/").toString())
+        .build();
 
     // Retrieve the base URL for logging and validation purposes.
     String baseUrl = mockWebServer.url("/").toString();
@@ -53,16 +62,52 @@ public class ExchangeRateServiceTest {
   }
 
   @Test
+  void getPriceSuccessTest() {
+    String base = "MAD";
+    String symbol = "BTC";
+    String mockedResponse = """
+                          {
+            "data": {
+                "BTC": {
+                    "quote": {
+                        "MAD": {
+                            "price": 1029310.6450322965
+                        }
+                    }
+                }
+            }
+        }
+                """;
+    //Mock
+    mockWebServer.enqueue(
+        new MockResponse().setResponseCode(HttpStatus.OK.value())
+            .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .setBody(mockedResponse));
+
+    // Act
+    Mono<CryptoResponseMapper> result = exchangeRateService.retrivePrice(symbol, base);
+
+    // Verify
+    StepVerifier.create(result)
+        .expectNextMatches(response -> {
+          return response.getBase().equals(base) &&
+              response.getSymbol().equals(symbol) &&
+              response.getPrice().compareTo(new BigDecimal("1029310.6450322965")) == 0;
+        })
+        .verifyComplete();
+
+  }
+
+  @Test
   void getAllDataSuccessTest() {
     // Define the mocked response that will be returned by the mock server.
     String mockResponse = getMockedResponse();
 
-    // Enqueue a mock response to be returned when the WebClient performs the GET
-    // request.
+    // Enqueue a mock response to be returned when the WebClient performs the
+    // GETrequest.
     mockWebServer.enqueue(
-        new MockResponse().setResponseCode(HttpStatus.OK.value()) // Set the response code to 200 OK
-            .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) // Set the content type header to
-                                                                                   // application/json
+        new MockResponse().setResponseCode(HttpStatus.OK.value())
+            .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .setBody(getMockedResponse())); // Set the response body to the mock data
 
     // Call the method that will interact with the WebClient (and the mock server).
@@ -100,14 +145,15 @@ public class ExchangeRateServiceTest {
 
   @Test
   void getAllDataErrorApiSubTest() {
-    //
+    // Mimicking CMC API behavior for an expired API key
     mockWebServer.enqueue(
-        new MockResponse().setResponseCode(402) // Mimicking CMC API behavior for an expired API key
+        new MockResponse().setResponseCode(402)
             .setBody("{\"status\":{\"error_message\":\"Your API Key's subscription plan has expired.\"}}")
             .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
     Mono<ResponseEntity<String>> result = exchangeRateService.getAllData();
-    // Done in the sake of learning, checking the returned message
+    // Done in the sake of learning, checking the returned message that cmc defined
+    // themselves
     StepVerifier.create(result)
         .expectErrorMatches(throwable -> {
           if (throwable instanceof ClientException) {
@@ -121,7 +167,6 @@ public class ExchangeRateServiceTest {
 
   static String getMockedResponse() {
     return """
-
                             {
                   "status": {
                     "timestamp": "2025-01-28T12:00:00.000Z",
