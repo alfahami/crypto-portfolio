@@ -19,10 +19,6 @@ import com.codelogium.exchangerateservice.exception.ClientException;
 import com.codelogium.exchangerateservice.mapper.CryptoResponseMapper;
 import com.codelogium.exchangerateservice.service.ExchangeRateService;
 import com.codelogium.exchangerateservice.service.ExchangeRateServiceImpl;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import reactor.core.publisher.Mono;
@@ -95,7 +91,6 @@ public class ExchangeRateServiceTest {
               response.getPrice().compareTo(new BigDecimal("1029310.6450322965")) == 0;
         })
         .verifyComplete();
-
   }
 
   @Test
@@ -113,8 +108,7 @@ public class ExchangeRateServiceTest {
     // Call the method that will interact with the WebClient (and the mock server).
     Mono<ResponseEntity<String>> result = exchangeRateService.getAllData();
 
-    // Verify that the result matches the expected response. StepVerifier is used
-    // for reactive streams.
+    // Verify that the result matches the expected response. StepVerifier is used for reactive streams.
     StepVerifier.create(result)
         .expectNextMatches(responseData -> responseData.getBody().contains(mockResponse)).verifyComplete();
 
