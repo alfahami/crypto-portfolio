@@ -34,7 +34,8 @@ public class ExchangeRateServiceTest {
     mockWebServer = new MockWebServer();
     mockWebServer.start(9090);
 
-    // Create a WebClient instance with the mock server's base URL, this simulates the actual WebClient in exchangerate service.
+    // Create a WebClient instance with the mock server's base URL, this simulates
+    // the actual WebClient in exchangerate service.
     WebClient mockedWebClient = WebClient.builder().baseUrl(mockWebServer.url("/").toString()).build();
 
     // Retrieve the base URL for logging and validation purposes.
@@ -56,16 +57,19 @@ public class ExchangeRateServiceTest {
     // Define the mocked response that will be returned by the mock server.
     String mockResponse = getMockedResponse();
 
-    // Enqueue a mock response to be returned when the WebClient performs the GET request.
+    // Enqueue a mock response to be returned when the WebClient performs the GET
+    // request.
     mockWebServer.enqueue(
         new MockResponse().setResponseCode(HttpStatus.OK.value()) // Set the response code to 200 OK
-            .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) // Set the content type header to application/json
+            .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) // Set the content type header to
+                                                                                   // application/json
             .setBody(getMockedResponse())); // Set the response body to the mock data
 
     // Call the method that will interact with the WebClient (and the mock server).
     Mono<ResponseEntity<String>> result = exchangeRateService.getAllData();
 
-    // Verify that the result matches the expected response. StepVerifier is used for reactive streams.
+    // Verify that the result matches the expected response. StepVerifier is used
+    // for reactive streams.
     StepVerifier.create(result)
         .expectNextMatches(responseData -> responseData.getBody().contains(mockResponse)).verifyComplete();
 
@@ -75,22 +79,44 @@ public class ExchangeRateServiceTest {
   void getAllDataErrorTest() {
 
     /*
-     * Test of 500 INTERNAL SERVER ERROR | 4xx client Error can be test by setting the response to a client Error(ex: 404) and in stepVerfier : is4xxServerError
+     * Test of 500 INTERNAL SERVER ERROR | 4xx client Error can be test by setting
+     * the response to a client Error(ex: 404) and in stepVerfier : is4xxServerError
      * 
      */
     mockWebServer.enqueue(
-      new MockResponse().setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody("{\"status\":{\"error_message\":\"Internal Server Error\"}}")
-    );
+        new MockResponse().setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .setBody("{\"status\":{\"error_message\":\"Internal Server Error\"}}")
+            .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
     Mono<ResponseEntity<String>> result = exchangeRateService.getAllData();
 
+    // Checking the error code using expectErrorMatches
     StepVerifier.create(result)
-                .expectErrorMatches(throwable -> 
-                  throwable instanceof ClientException &&
-                  ((ClientException) throwable).getStatus().is5xxServerError()).verify();  
+        .expectErrorMatches(throwable -> throwable instanceof ClientException &&
+            ((ClientException) throwable).getStatus().is5xxServerError())
+        .verify();
+  }
 
+  @Test
+  void getAllDataErrorApiSubTest() {
+    //
+    mockWebServer.enqueue(
+        new MockResponse().setResponseCode(402) // Mimicking CMC API behavior for an expired API key
+            .setBody("{\"status\":{\"error_message\":\"Your API Key's subscription plan has expired.\"}}")
+            .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
+
+    Mono<ResponseEntity<String>> result = exchangeRateService.getAllData();
+    // Done in the sake of learning, checking the returned message
+    StepVerifier.create(result)
+        .expectErrorMatches(throwable -> {
+          if (throwable instanceof ClientException) {
+            ClientException exception = (ClientException) throwable;
+            return exception.getMessage().contains("Your API Key's subscription plan has expired.")
+                && exception.getStatus().is4xxClientError();
+          }
+          return false;
+        });
   }
 
   static String getMockedResponse() {
