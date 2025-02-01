@@ -14,6 +14,26 @@ public class ExchangeRateEndToEndApiTest {
     @Autowired
     private WebTestClient webTestClient;
 
+
+    /*
+     * Validate that the endpoint /exchange-rate?symbol=BTC&base=MAD is responding correctly with the correct HTTP status, content type, and expected JSON structure. 
+     */
+    @Test
+    public void getLastPrice_ShouldReturnSuccessfulResponse() {
+        webTestClient.get()
+                    .uri("/exchange-rate?symbol=ETH&base=MAD")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .exchange()
+                    .expectStatus().isOk()
+                    .expectHeader().contentType("application/json")
+                    .expectBody()
+                    .consumeWith(responseBody -> {
+                        System.out.println("Response Body" + new String(responseBody.getResponseBody()));})
+                    .jsonPath("$.symbol").isEqualTo("ETH")
+                    .jsonPath("$.base").isEqualTo("MAD");
+                    
+    }
+
     /*
      * Validate that the endpoint /exchange-rate/latest is responding correctly with the correct HTTP status, content type, and expected JSON structure. 
      */
@@ -35,7 +55,7 @@ public class ExchangeRateEndToEndApiTest {
     }
 
     /*
-     * Validate that the endpoint /exchange-rate/latest with error code. 
+     * Validate that the endpoint /exchange-rate?symbol=XXXX&base=YYYY with error code. 
      */
     @Test
     void getLastPrice_ShouldReturnInternalErrorResponse() {
