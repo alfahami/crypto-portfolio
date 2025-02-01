@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(value = "/exchange-rate", consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/exchange-rate", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ExchangeRateController {
     
     private ExchangeRateService exchangeRateService;

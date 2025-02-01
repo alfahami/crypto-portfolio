@@ -1,5 +1,7 @@
 package com.codelogium.exchangerateservice.service;
 
+import java.time.Duration;
+
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -73,7 +75,8 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
                                         return Mono.error(new ClientException(statusCode, "API error: " + errorBody));
                                 }) //transform the HTTP error response into a custom exception (ClientException).
                         )
-                        .toEntity(String.class);
+                        .toEntity(String.class)
+                        .timeout(Duration.ofMillis(10000));
 
                 return result;
         }
