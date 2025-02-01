@@ -27,19 +27,23 @@ public class ExchangeRateEndToEndApiTest {
             .expectStatus().isOk()
             .expectHeader().contentType("application/json; charset=utf-8")
             .expectBody()
-            .jsonPath("$.data").exists();
+            .consumeWith(response ->  {
+                System.out.println("Response Body " + new String(response.getResponseBody()));
+            })
+            .jsonPath("$.data").exists()
+            .jsonPath("$.data[0].symbol").isEqualTo("BTC");
     }
 
     /*
      * Validate that the endpoint /exchange-rate/latest with error code. 
      */
     @Test
-    void getRawData_ShouldReturnErrorResponse() {
+    void getLastPrice_ShouldReturnInternalErrorResponse() {
         webTestClient.get()
-                    .uri("/exchange-rate/lastest")
+                    .uri("/exchange-rate?symbol=INVALID&base=ERROR")
                     .accept(MediaType.APPLICATION_JSON)
                     .exchange()
-                    .expectStatus().is4xxClientError()
+                    .expectStatus().is5xxServerError()
                     .expectHeader().contentType("application/json");
     }
 
