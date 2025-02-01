@@ -1,5 +1,7 @@
 package com.codelogium.exchangerateservice;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 
@@ -21,6 +23,7 @@ import com.codelogium.exchangerateservice.service.ExchangeRateService;
 import com.codelogium.exchangerateservice.service.ExchangeRateServiceImpl;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -53,7 +56,7 @@ public class ExchangeRateServiceTest {
   }
 
   @Test
-  void getPriceSuccessTest() {
+  void getPriceSuccessTest() throws Exception {
     String base = "MAD";
     String symbol = "BTC";
     String mockedResponse = """
@@ -86,6 +89,9 @@ public class ExchangeRateServiceTest {
               response.getPrice().compareTo(new BigDecimal("1029310.6450322965")) == 0;
         })
         .verifyComplete();
+    //Assert
+    RecordedRequest recordedRequest = mockWebServer.takeRequest();
+    assertEquals("GET", recordedRequest.getMethod());
   }
 
   @Test
