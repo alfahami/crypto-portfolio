@@ -13,7 +13,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -41,7 +40,6 @@ public class ExchangeRateServiceTest {
 
     // Create a WebClient that simulates the actual WebClient in exchangerate service.
     WebClient mockedWebClient = WebClient.builder()
-        .codecs(configurer -> configurer.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder()))
         .baseUrl(mockWebServer.url("/").toString())
         .build();
 
