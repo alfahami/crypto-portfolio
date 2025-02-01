@@ -30,4 +30,17 @@ public class ExchangeRateEndToEndApiTest {
             .jsonPath("$.data").exists();
     }
 
+    /*
+     * Validate that the endpoint /exchange-rate/latest with error code. 
+     */
+    @Test
+    void getRawData_ShouldReturnErrorResponse() {
+        webTestClient.get()
+                    .uri("/exchange-rate/lastest")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .exchange()
+                    .expectStatus().is4xxClientError()
+                    .expectHeader().contentType("application/json");
+    }
+
 }
