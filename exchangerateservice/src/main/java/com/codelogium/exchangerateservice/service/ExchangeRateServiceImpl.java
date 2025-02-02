@@ -1,13 +1,15 @@
 package com.codelogium.exchangerateservice.service;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.codelogium.exchangerateservice.exception.ClientException;
+import com.codelogium.exchangerateservice.exception.CryptoException;
 import com.codelogium.exchangerateservice.mapper.CryptoResponseMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -43,16 +45,19 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
                                 .flatMap(errorBody -> {
                                         //Wrap the WebClient error into ClientException
                                         HttpStatusCode statusCode = clientResponse.statusCode();
-                                        return Mono.error(new ClientException(statusCode, "API error: " + errorBody));
+                                        return Mono.error(new CryptoException(statusCode, "API error: " + errorBody));
                                 }) //transform the HTTP error response into a custom exception (ClientException).
                         )
                 .bodyToMono(JsonNode.class)
                 .map(response -> {
                     JsonNode quote = response.path("data").path(symbol).path("quote").path(base);
+                    BigDecimal price = quote.has("price") ? quote.get("price").decimalValue() : BigDecimal.ZERO;
+                    if(price.compareTo(BigDecimal.ZERO) == 0) throw new CryptoException(HttpStatus.BAD_REQUEST, "Invalid Symbol: " + symbol);
+
                     return new CryptoResponseMapper(
                             symbol,
                             base,
-                            quote.path("price").decimalValue());
+                            price);
                 });
     }
 
@@ -72,7 +77,7 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
                                 .flatMap(errorBody -> {
                                         //Wrap the WebClient error into ClientException
                                         HttpStatusCode statusCode = clientResponse.statusCode();
-                                        return Mono.error(new ClientException(statusCode, "API error: " + errorBody));
+                                        return Mono.error(new CryptoException(statusCode, "API error: " + errorBody));
                                 }) //transform the HTTP error response into a custom exception (ClientException).
                         )
                         .toEntity(String.class)
