@@ -45,7 +45,7 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
                                 .flatMap(errorBody -> {
                                         //Wrap the WebClient error into ClientException
                                         HttpStatusCode statusCode = clientResponse.statusCode();
-                                        return Mono.error(new CryptoException(statusCode, "API error: " + errorBody));
+                                        return Mono.error(new CryptoException(statusCode, errorBody));
                                 }) //transform the HTTP error response into a custom exception (ClientException).
                         )
                 .bodyToMono(JsonNode.class)
@@ -77,7 +77,7 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
                                 .flatMap(errorBody -> {
                                         //Wrap the WebClient error into ClientException
                                         HttpStatusCode statusCode = clientResponse.statusCode();
-                                        return Mono.error(new CryptoException(statusCode, "API error: " + errorBody));
+                                        return Mono.error(new CryptoException(statusCode, errorBody));
                                 }) //transform the HTTP error response into a custom exception (ClientException).
                         )
                         .toEntity(String.class)

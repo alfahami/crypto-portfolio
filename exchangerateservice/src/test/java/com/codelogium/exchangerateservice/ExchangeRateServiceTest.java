@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.codelogium.exchangerateservice.exception.ClientException;
+import com.codelogium.exchangerateservice.exception.CryptoException;
 import com.codelogium.exchangerateservice.mapper.CryptoResponseMapper;
 import com.codelogium.exchangerateservice.service.ExchangeRateService;
 import com.codelogium.exchangerateservice.service.ExchangeRateServiceImpl;
@@ -106,11 +106,10 @@ public class ExchangeRateServiceTest {
 
     // Checking the error code using expectErrorMatches
     StepVerifier.create(result)
-        .expectErrorMatches(throwable -> throwable instanceof ClientException &&
-            ((ClientException) throwable).getStatus().is4xxClientError())
+        .expectErrorMatches(throwable -> throwable instanceof CryptoException &&
+            ((CryptoException) throwable).getStatus().is4xxClientError())
         .verify();
   }
-  
 
   @Test
   void getAllDataSuccessTest() {
@@ -150,8 +149,8 @@ public class ExchangeRateServiceTest {
 
     // Checking the error code using expectErrorMatches
     StepVerifier.create(result)
-        .expectErrorMatches(throwable -> throwable instanceof ClientException &&
-            ((ClientException) throwable).getStatus().is5xxServerError())
+        .expectErrorMatches(throwable -> throwable instanceof CryptoException &&
+            ((CryptoException) throwable).getStatus().is5xxServerError())
         .verify();
   }
 
@@ -167,8 +166,8 @@ public class ExchangeRateServiceTest {
     // Done in the sake of learning, checking the returned message that cmc defined themselves
     StepVerifier.create(result)
         .expectErrorMatches(throwable -> {
-          if (throwable instanceof ClientException) {
-            ClientException exception = (ClientException) throwable;
+          if (throwable instanceof CryptoException) {
+            CryptoException exception = (CryptoException) throwable;
             return exception.getMessage().contains("Your API Key's subscription plan has expired.")
                 && exception.getStatus().is4xxClientError();
           }
@@ -242,5 +241,4 @@ public class ExchangeRateServiceTest {
 
         """;
   }
-
 }

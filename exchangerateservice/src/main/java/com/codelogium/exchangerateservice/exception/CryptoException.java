@@ -7,16 +7,16 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import lombok.Getter;
 
 @Getter
-public class ClientException extends RuntimeException {
+public class CryptoException extends RuntimeException {
 
     private final HttpStatusCode status;
 
-    public ClientException(HttpStatusCode status, String message) {
+    public CryptoException(HttpStatusCode status, String message) {
         super(message);
         this.status = status;
     }
 
-    public static ClientException from(ClientResponse response) {
-        return new ClientException(response.statusCode(), response.toEntity(String.class).toString());
+    public static CryptoException from(ClientResponse response) {
+        return new CryptoException(response.statusCode(), response.toEntity(String.class).toString());
     }
 }
