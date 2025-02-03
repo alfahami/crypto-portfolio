@@ -16,6 +16,7 @@ public class CryptoException extends RuntimeException {
         this.status = status;
     }
 
+    // Factory method of creating an instance of this from a clientResponse
     public static CryptoException from(ClientResponse response) {
         return new CryptoException(response.statusCode(), response.toEntity(String.class).toString());
     }

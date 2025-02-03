@@ -24,7 +24,7 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
 
     /**
      * Fetches cryptocurrency price data using WebClient, processes the raw JSON response, and maps it to a CryptoPrice object containing the symbol, base currency, and price.
-     * Handles errors during the request and data mapping gracefully.
+     * Handles errors during the request and data mapping gracefully using Mono.just() to propagate them in the reactive pipeline.
      * 
      * @param symbol : The symbol of the cryptocurrency (e.g., BTC, ETH).
      * @param baseCurrency: The base currency for conversion (e.g., USD, EUR).
@@ -40,20 +40,13 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
                 .retrieve()
                 .onStatus( 
                         HttpStatusCode::isError, 
-                        clientResponse -> 
-                                clientResponse.bodyToMono(String.class)
-                                .flatMap(errorBody -> {
-                                        //Wrap the WebClient error into ClientException
-                                        HttpStatusCode statusCode = clientResponse.statusCode();
-                                        return Mono.error(new CryptoException(statusCode, errorBody));
-                                }) //transform the HTTP error response into a custom exception (ClientException).
-                        )
+                        clientResponse -> Mono.just(CryptoException.from(clientResponse))) // wraps a CryptoException created from the ClientResponse object 
                 .bodyToMono(JsonNode.class)
                 .map(response -> {
                     JsonNode quote = response.path("data").path(symbol).path("quote").path(base);
                     BigDecimal price = quote.has("price") ? quote.get("price").decimalValue() : BigDecimal.ZERO;
+                    //when invalid symbol, cmc respond with price as 0 -> we're explicitely handling that error 
                     if(price.compareTo(BigDecimal.ZERO) == 0) throw new CryptoException(HttpStatus.BAD_REQUEST, "Invalid Symbol: " + symbol);
-
                     return new CryptoResponseMapper(
                             symbol,
                             base,
@@ -72,14 +65,7 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
                                 .retrieve()
                                 .onStatus( 
                         HttpStatusCode::isError, 
-                        clientResponse -> 
-                                clientResponse.bodyToMono(String.class)
-                                .flatMap(errorBody -> {
-                                        //Wrap the WebClient error into ClientException
-                                        HttpStatusCode statusCode = clientResponse.statusCode();
-                                        return Mono.error(new CryptoException(statusCode, errorBody));
-                                }) //transform the HTTP error response into a custom exception (ClientException).
-                        )
+                        clientResponse -> Mono.just(CryptoException.from(clientResponse))) // wraps a CryptoException created from the ClientResponse object 
                         .toEntity(String.class)
                         .timeout(Duration.ofMillis(10000));
 
