@@ -63,8 +63,8 @@ public class ExchangeRateEndToEndApiTest {
                     .uri("/exchange-rate?symbol=INVALID&base=ERROR")
                     .accept(MediaType.APPLICATION_JSON)
                     .exchange()
-                    .expectStatus().is5xxServerError()
-                    .expectHeader().contentType("application/json");
+                    .expectStatus().is4xxClientError()
+                    .expectHeader().contentType("application/json;charset=UTF-8");
     }
 
 }
