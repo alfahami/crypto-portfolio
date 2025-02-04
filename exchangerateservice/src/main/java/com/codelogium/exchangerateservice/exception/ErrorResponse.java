@@ -1,17 +1,15 @@
 package com.codelogium.exchangerateservice.exception;
 
 import java.time.LocalDateTime;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ErrorResponse {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     private LocalDateTime timestamp;
-    List<String> message;
+    String message;
 
-    public ErrorResponse(List<String> message) {
+    public ErrorResponse(String message) {
         this.timestamp = LocalDateTime.now();
         this.message = message;
     }
@@ -25,11 +23,11 @@ public class ErrorResponse {
         this.timestamp = timestamp;
     }
 
-    public List<String> getMessage() {
+    public String getMessage() {
         return this.message;
     }
 
-    public void setMessage(List<String> message) {
+    public void setMessage(String message) {
         this.message = message;
     }    
 }
