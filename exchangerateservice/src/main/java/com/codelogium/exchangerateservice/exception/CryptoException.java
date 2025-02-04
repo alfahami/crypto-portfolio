@@ -9,7 +9,6 @@ import lombok.Getter;
 import reactor.core.publisher.Mono;
 
 @Getter
-
 public class CryptoException extends RuntimeException {
 
     private final HttpStatusCode status;
