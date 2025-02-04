@@ -28,7 +28,7 @@ public class ExchangeRateController {
 
     @GetMapping()
     public Mono<CryptoResponseMapper> getMethodName(@RequestParam String symbol, @RequestParam String base) {
-        return exchangeRateService.retrivePrice(symbol, base);
+        return exchangeRateService.retrivePrice(symbol.toUpperCase(), base.toUpperCase());
     }
     
 }
