@@ -1,12 +1,10 @@
 
 package com.codelogium.exchangerateservice.exception;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.ClientResponse;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import reactor.core.publisher.Mono;
 
