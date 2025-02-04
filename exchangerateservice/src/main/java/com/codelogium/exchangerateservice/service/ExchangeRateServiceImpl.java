@@ -12,7 +12,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.codelogium.exchangerateservice.exception.CryptoException;
 import com.codelogium.exchangerateservice.mapper.CryptoResponseMapper;
 import com.fasterxml.jackson.databind.JsonNode;
-
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Mono;
 
@@ -34,42 +33,36 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
     public Mono<CryptoResponseMapper> retrivePrice(String symbol, String base) {
         return webClient.get().uri(
                 uriBuilder -> uriBuilder.path("/v1/cryptocurrency/quotes/latest")
-                        .queryParam("symbol", symbol)
-                        .queryParam("convert", base)
-                        .build())
+                .queryParam("symbol", symbol)
+                .queryParam("convert", base)
+                .build())
                 .retrieve()
-                .onStatus( 
-                        HttpStatusCode::isError, 
-                        clientResponse -> CryptoException.from(clientResponse).flatMap(Mono::error)) // wraps a CryptoException created from the ClientResponse object 
+                .onStatus(HttpStatusCode::isError, clientResponse -> CryptoException.handleErrorResponse(clientResponse, base)) 
                 .bodyToMono(JsonNode.class)
                 .map(response -> {
                     JsonNode quote = response.path("data").path(symbol).path("quote").path(base);
 
                     BigDecimal price = quote.has("price") ? quote.get("price").decimalValue() : BigDecimal.ZERO;
-                    //when invalid symbol, cmc respond with price as 0 -> we're explicitely handling that error by checking if the price is zero 
+                    //explicitely handling base error as cmc give response with 0 price value 
                     if(price.compareTo(BigDecimal.ZERO) == 0) throw new CryptoException(HttpStatus.BAD_REQUEST, "Invalid Symbol: " + symbol);
-                    return new CryptoResponseMapper(
-                            symbol,
-                            base,
-                            price);
+                    
+                    return new CryptoResponseMapper(symbol,base,price);
                 });
     }
 
-        @Override
-        public Mono<ResponseEntity<String>> getAllData() {
-                /*
-                 * Asynchronously fetches cryptocurrency listings using WebClient, with error
-                 * handling and reactive response processing
-                 */
-                Mono<ResponseEntity<String>> result = webClient.get()
-                                .uri("/v1/cryptocurrency/listings/latest")
-                                .retrieve()
-                                .onStatus( 
-                        HttpStatusCode::isError, 
-                        clientResponse -> CryptoException.from(clientResponse).flatMap(Mono::error)) // wraps a CryptoException created from the ClientResponse object 
-                        .toEntity(String.class)
-                        .timeout(Duration.ofMillis(10000));
-
-                return result;
-        }
+     /*
+    * Asynchronously fetches cryptocurrency listings using WebClient, with error handling and reactive response processing
+    */
+    @Override
+    public Mono<ResponseEntity<String>> getAllData() {
+        Mono<ResponseEntity<String>> result = webClient.get()
+            .uri("/v1/cryptocurrency/listings/latest")
+            .retrieve()
+            .onStatus( 
+                HttpStatusCode::isError, 
+                clientResponse -> CryptoException.handleErrorResponse(clientResponse, null))
+            .toEntity(String.class)
+            .timeout(Duration.ofMillis(10000));
+        return result;
+    }    
 }
