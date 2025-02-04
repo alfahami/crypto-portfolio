@@ -25,7 +25,7 @@ public class ExchangeRateEndToEndApiTest {
                     .accept(MediaType.APPLICATION_JSON)
                     .exchange()
                     .expectStatus().isOk()
-                    .expectHeader().contentType("application/json")
+                    .expectHeader().contentType(MediaType.APPLICATION_JSON_VALUE)
                     .expectBody()
                     .consumeWith(responseBody -> {
                         System.out.println("Response Body" + new String(responseBody.getResponseBody()));})
@@ -64,7 +64,6 @@ public class ExchangeRateEndToEndApiTest {
                     .accept(MediaType.APPLICATION_JSON)
                     .exchange()
                     .expectStatus().is4xxClientError()
-                    .expectHeader().contentType("application/json;charset=UTF-8");
+                    .expectHeader().contentType(MediaType.APPLICATION_JSON_VALUE);
     }
-
 }
