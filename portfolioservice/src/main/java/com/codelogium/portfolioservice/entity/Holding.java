@@ -1,8 +1,6 @@
 package com.codelogium.portfolioservice.entity;
 
 import java.math.BigDecimal;
-import java.util.Set;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Data;
