@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.codelogium.portfolioservice.entity.Portfolio;
 
-
-public interface PortfolioRespository extends JpaRepository<Long, Portfolio> {
+public interface PortfolioRespository extends JpaRepository<Portfolio, Long> {
     
 }

@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.codelogium.portfolioservice.entity.Holding;
 
-public interface HoldingRepository extends JpaRepository<Long, Holding> {
+public interface HoldingRepository extends JpaRepository<Holding, Long> {
     
 }
