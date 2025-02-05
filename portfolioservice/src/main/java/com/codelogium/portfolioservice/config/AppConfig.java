@@ -15,6 +15,7 @@ public class AppConfig {
 
     @Bean
     public WebClient webClient(WebClient.Builder builder) {
+        // Registring WebCLient in the spring context
         return builder.baseUrl(baseUrl)
                       .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                       .build();
