@@ -17,6 +17,4 @@ public class Holding {
     private Long id;
     private String symbol;
     private BigDecimal amount;
-
-    private Set<Portfolio> portfolios;
 }

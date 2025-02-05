@@ -1,6 +1,7 @@
 package com.codelogium.portfolioservice.entity;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -17,5 +18,7 @@ public class User {
     private String fullName;
     private LocalDate birthDate;
     private String profession;
+
+    private Set<Portfolio> portfolios;
 
 }
