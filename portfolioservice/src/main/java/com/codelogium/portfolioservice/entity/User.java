@@ -3,7 +3,6 @@ package com.codelogium.portfolioservice.entity;
 import java.time.LocalDate;
 import java.util.Set;
 
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,11 +12,13 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @Data
 @Entity
+@NoArgsConstructor
 @RequiredArgsConstructor
 @Table(name = "users")
 public class User {
@@ -28,9 +29,9 @@ public class User {
     @NonNull
     @NotBlank(message = "Full Name cannot be blank")
     private String fullName;
-    @Nonnull
+    @NonNull
     private LocalDate birthDate;
-    @Nonnull
+    @NonNull
     @NotBlank(message = "Profession cannot be blank")
     private String profession;
 
