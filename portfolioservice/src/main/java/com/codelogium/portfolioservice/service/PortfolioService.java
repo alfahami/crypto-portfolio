@@ -1,5 +1,7 @@
 package com.codelogium.portfolioservice.service;
 
-public interface PortfolioService {
+import com.codelogium.portfolioservice.entity.Portfolio;
 
+public interface PortfolioService {
+    Portfolio addPortfolio(Portfolio portfolio);
 } 
