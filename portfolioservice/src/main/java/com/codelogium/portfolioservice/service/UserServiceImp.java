@@ -22,8 +22,11 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
+    public User getUser(Long id) {
+        return unwrapUser(id, userRepository.findById(id));
+    }
+    @Override
     public User addPortfolioToUser(Long userId, Long portfolioId) {
-        // TODO Auto-generated method stub
         return null;
     }
 
