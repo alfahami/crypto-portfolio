@@ -2,8 +2,6 @@ package com.codelogium.portfolioservice.service;
 
 import java.util.Optional;
 
-import javax.swing.text.html.Option;
-
 import org.springframework.stereotype.Service;
 
 import com.codelogium.portfolioservice.entity.Holding;
