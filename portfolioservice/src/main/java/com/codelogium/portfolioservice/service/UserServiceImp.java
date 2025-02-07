@@ -4,8 +4,10 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.codelogium.portfolioservice.entity.Portfolio;
 import com.codelogium.portfolioservice.entity.User;
 import com.codelogium.portfolioservice.exception.EntityNotFoundException;
+import com.codelogium.portfolioservice.respositry.PortfolioRespository;
 import com.codelogium.portfolioservice.respositry.UserRepository;
 
 import lombok.AllArgsConstructor;
@@ -15,6 +17,7 @@ import lombok.AllArgsConstructor;
 public class UserServiceImp implements UserService {
     
     private UserRepository userRepository;
+    private PortfolioRespository portfolioRespository;
 
     @Override
     public User addUser(User newUser) {
@@ -27,13 +30,16 @@ public class UserServiceImp implements UserService {
     }
     @Override
     public User addPortfolioToUser(Long userId, Long portfolioId) {
-        return null;
+        
+        User user = getUser(userId);
+        Portfolio portfolio = PortfolioServiceImp.unwrapPortfolio(portfolioId, portfolioRespository.findById(portfolioId));
+
+        user.getPortfolios().add(portfolio);
+        return userRepository.save(user);
     }
 
     public static User unwrapUser(Long id, Optional<User> optionalUser) {
         if(optionalUser.isPresent()) return optionalUser.get();
         else throw new EntityNotFoundException(id, User.class);
     }
-    
-
 }
