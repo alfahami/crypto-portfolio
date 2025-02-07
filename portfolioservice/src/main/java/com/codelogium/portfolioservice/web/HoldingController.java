@@ -1,6 +1,7 @@
 package com.codelogium.portfolioservice.web;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +15,7 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/portfolios/{portfolioId}/holdings")
+@RequestMapping(value = "/portfolios/{portfolioId}/holdings", produces = MediaType.APPLICATION_JSON_VALUE)
 public class HoldingController {
     
     private HoldingService holdingService;
