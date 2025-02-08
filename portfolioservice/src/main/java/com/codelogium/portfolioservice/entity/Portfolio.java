@@ -1,7 +1,10 @@
 package com.codelogium.portfolioservice.entity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -14,11 +17,13 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @Data
 @Entity
+@NoArgsConstructor
 @RequiredArgsConstructor
 @Table(name = "portfolios")
 public class Portfolio {
@@ -32,18 +37,12 @@ public class Portfolio {
     private String name;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "user_id") // creates a foreign key
     private User user; //each portfolio -> One User
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Holding> holdings;
-
-    //Add holding to the portfolio with initialization check
-    public void addHolding(Holding holding) {
-        if(this.holdings == null) {
-            this.holdings = new ArrayList<>();
-        }
-        this.holdings.add(holding);
-    }
+    private Set<Holding> holdings = new HashSet<>();
 
 }

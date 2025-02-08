@@ -1,6 +1,9 @@
 package com.codelogium.portfolioservice.entity;
 
 import java.math.BigDecimal;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,6 +30,7 @@ public class Holding {
     private BigDecimal amount;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "portfolio_id")
     private Portfolio portfolio;
 }

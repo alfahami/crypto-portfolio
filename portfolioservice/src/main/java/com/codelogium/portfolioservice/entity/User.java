@@ -1,7 +1,11 @@
 package com.codelogium.portfolioservice.entity;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -35,6 +39,7 @@ public class User {
     @NotBlank(message = "Profession cannot be blank")
     private String profession;
 
+    @JsonManagedReference // Helping Jackson serialize properly
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) 
-    private Set<Portfolio> portfolios; // One User -> Many Portfolios
+    private Set<Portfolio> portfolios = new HashSet<>(); // One User -> Many Portfolios
 }
