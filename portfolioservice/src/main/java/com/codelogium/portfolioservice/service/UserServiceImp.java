@@ -20,7 +20,7 @@ public class UserServiceImp implements UserService {
     private PortfolioRespository portfolioRespository;
 
     @Override
-    public User addUser(User newUser) {
+    public User createUser(User newUser) {
         return userRepository.save(newUser);
     }
 

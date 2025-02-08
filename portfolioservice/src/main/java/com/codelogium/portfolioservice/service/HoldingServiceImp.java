@@ -17,7 +17,7 @@ public class HoldingServiceImp implements HoldingService {
     private HoldingRepository holdingRepository;
 
     @Override
-    public Holding addHolding(Holding holding) {
+    public Holding createHolding(Holding holding) {
         return this.holdingRepository.save(holding);
     }
 
