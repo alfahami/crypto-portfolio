@@ -1,5 +1,7 @@
 package com.codelogium.portfolioservice.service;
 
+import java.time.LocalDate;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -28,6 +30,8 @@ public class UserServiceImp implements UserService {
     public User getUser(Long id) {
         return unwrapUser(id, userRepository.findById(id));
     }
+
+
     @Override
     public User addPortfolioToUser(Long userId, Long portfolioId) {
         
@@ -36,6 +40,26 @@ public class UserServiceImp implements UserService {
 
         user.getPortfolios().add(portfolio);
         return userRepository.save(user);
+    }
+
+    @Override
+    public User updateUser(Long id, Map<String, Object> updates) {
+        User retrievedUser = unwrapUser(id, userRepository.findById(id));
+
+        for(Map.Entry<String,Object> entry : updates.entrySet()) {
+            switch (entry.getKey()) {
+                case "fullName":
+                    retrievedUser.setFullName((String) entry.getValue());
+                    break;
+                case "birthDate":
+                    retrievedUser.setBirthDate((LocalDate) entry.getValue());
+                case "profession":
+                    retrievedUser.setProfession((String) entry.getValue());
+                default:
+                    break;
+            }
+        }
+        return userRepository.save(retrievedUser);
     }
 
     public static User unwrapUser(Long id, Optional<User> optionalUser) {

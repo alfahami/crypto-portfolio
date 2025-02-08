@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -29,11 +30,15 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @NonNull
     @NotBlank(message = "Full Name cannot be blank")
     private String fullName;
+
+    @Past
     @NonNull
     private LocalDate birthDate;
+    
     @NonNull
     @NotBlank(message = "Profession cannot be blank")
     private String profession;
