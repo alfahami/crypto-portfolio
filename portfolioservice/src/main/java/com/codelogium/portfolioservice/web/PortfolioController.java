@@ -21,9 +21,9 @@ public class PortfolioController {
 
     private PortfolioService portfolioService;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
     public ResponseEntity<Portfolio> createPortfolio(@PathVariable Long userId, @RequestBody @Valid Portfolio portfolio) {
-        return new ResponseEntity<>(portfolioService.createPortfolio(userId, portfolio), HttpStatus.valueOf(200));
+        return new ResponseEntity<>(portfolioService.createPortfolio(userId, portfolio), HttpStatus.valueOf(201));
     }
 
 

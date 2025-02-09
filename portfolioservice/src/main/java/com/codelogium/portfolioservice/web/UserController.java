@@ -16,6 +16,7 @@ import com.codelogium.portfolioservice.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
+
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -24,13 +25,15 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> addUser(@RequestBody @Valid User user) {
-        return new ResponseEntity<>(userService.addUser(user), HttpStatus.valueOf(200));
+    public ResponseEntity<User> createUser(@RequestBody @Valid User user) {
+        return new ResponseEntity<>(userService.createUser(user), HttpStatus.valueOf(201));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         return new ResponseEntity<>(userService.getUser(id), HttpStatus.valueOf(200));
     }
+
+    
     
 }
