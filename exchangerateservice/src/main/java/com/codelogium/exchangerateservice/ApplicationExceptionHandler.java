@@ -3,6 +3,7 @@ package com.codelogium.exchangerateservice;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler;
@@ -20,14 +21,17 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
     @ExceptionHandler(CryptoException.class)
     public ResponseEntity<Object> handleCryptoException(CryptoException ex) {
         ErrorResponse error = new ErrorResponse(ex.getLocalizedMessage());
-        return new ResponseEntity<>(error, ex.getStatus());   
+        return new ResponseEntity<>(error, ex.getStatus());
     }
-    
-    @Override
-    protected Mono<ResponseEntity<Object>> handleMissingRequestValueException(MissingRequestValueException ex,
-            HttpHeaders headers, HttpStatusCode status, ServerWebExchange exchange) {
 
-                ErrorResponse error = new ErrorResponse(ex.getReason());
-                return Mono.just(ResponseEntity.badRequest().body(error));
+    @SuppressWarnings("null")
+    @Override
+    protected Mono<ResponseEntity<Object>> handleMissingRequestValueException(@NonNull MissingRequestValueException ex,
+            @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull ServerWebExchange exchange) {
+
+        
+        ErrorResponse error = new ErrorResponse(ex.getReason());
+
+        return Mono.just(ResponseEntity.badRequest().body(error));
     }
 }
