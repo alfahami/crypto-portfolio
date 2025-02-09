@@ -45,6 +45,12 @@ public class UserServiceImp implements UserService {
         return userRepository.save(existingUser);
     }
 
+    @Override
+    public void removeUser(Long id) {
+        User existingUser = unwrapUser(id, userRepository.findById(id));
+        userRepository.delete(existingUser);
+    }
+
     public static User unwrapUser(Long id, Optional<User> optionalUser) {
         if(optionalUser.isPresent()) return optionalUser.get();
         else throw new EntityNotFoundException(id, User.class);
