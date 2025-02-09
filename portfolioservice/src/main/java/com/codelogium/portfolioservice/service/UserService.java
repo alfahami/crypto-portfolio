@@ -5,5 +5,5 @@ import com.codelogium.portfolioservice.entity.User;
 public interface UserService {
     User createUser(User newUser);
     User getUser(Long id);
-    User addPortfolioToUser(Long userId, Long portfolioId);
+    User updateUser(Long userId, User newUser);
 } 

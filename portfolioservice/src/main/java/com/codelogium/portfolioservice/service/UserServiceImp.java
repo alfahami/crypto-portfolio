@@ -1,15 +1,10 @@
 package com.codelogium.portfolioservice.service;
 
-import java.time.LocalDate;
-import java.util.Map;
 import java.util.Optional;
-
 import org.springframework.stereotype.Service;
 
-import com.codelogium.portfolioservice.entity.Portfolio;
 import com.codelogium.portfolioservice.entity.User;
 import com.codelogium.portfolioservice.exception.EntityNotFoundException;
-import com.codelogium.portfolioservice.respositry.PortfolioRespository;
 import com.codelogium.portfolioservice.respositry.UserRepository;
 
 import lombok.AllArgsConstructor;
@@ -19,7 +14,6 @@ import lombok.AllArgsConstructor;
 public class UserServiceImp implements UserService {
     
     private UserRepository userRepository;
-    private PortfolioRespository portfolioRespository;
 
     @Override
     public User createUser(User newUser) {
@@ -31,34 +25,9 @@ public class UserServiceImp implements UserService {
         return unwrapUser(id, userRepository.findById(id));
     }
 
-
     @Override
-    public User addPortfolioToUser(Long userId, Long portfolioId) {
-        
-        User user = getUser(userId);
-        Portfolio portfolio = PortfolioServiceImp.unwrapPortfolio(portfolioId, portfolioRespository.findById(portfolioId));
-
-        user.getPortfolios().add(portfolio);
-        return userRepository.save(user);
-    }
-
-    @Override
-    public User updateUser(Long id, Map<String, Object> updates) {
+    public User updateUser(Long id, User newUser) {
         User retrievedUser = unwrapUser(id, userRepository.findById(id));
-
-        for(Map.Entry<String,Object> entry : updates.entrySet()) {
-            switch (entry.getKey()) {
-                case "fullName":
-                    retrievedUser.setFullName((String) entry.getValue());
-                    break;
-                case "birthDate":
-                    retrievedUser.setBirthDate((LocalDate) entry.getValue());
-                case "profession":
-                    retrievedUser.setProfession((String) entry.getValue());
-                default:
-                    break;
-            }
-        }
         return userRepository.save(retrievedUser);
     }
 

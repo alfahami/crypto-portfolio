@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import com.codelogium.portfolioservice.entity.Portfolio;
 import com.codelogium.portfolioservice.entity.User;
 import com.codelogium.portfolioservice.exception.EntityNotFoundException;
-import com.codelogium.portfolioservice.respositry.PortfolioRespository;
+import com.codelogium.portfolioservice.respositry.PortfolioRepository;
 import com.codelogium.portfolioservice.respositry.UserRepository;
 
 import lombok.AllArgsConstructor;
@@ -16,7 +16,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class PortfolioServiceImp implements PortfolioService {
     
-    private PortfolioRespository portfolioRespository;
+    private PortfolioRepository portfolioRespository;
     private UserRepository userRepository;
 
     @Override
