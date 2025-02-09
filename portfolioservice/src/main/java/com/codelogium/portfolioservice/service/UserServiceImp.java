@@ -27,8 +27,10 @@ public class UserServiceImp implements UserService {
 
     @Override
     public User updateUser(Long id, User newUser) {
-        User retrievedUser = unwrapUser(id, userRepository.findById(id));
-        return userRepository.save(retrievedUser);
+        //checks for not found entity
+        unwrapUser(id, userRepository.findById(id));
+        newUser.setId(id); // ignore ID request in the body as it might be intentionally changed
+        return userRepository.save(newUser);
     }
 
     public static User unwrapUser(Long id, Optional<User> optionalUser) {
