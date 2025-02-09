@@ -7,6 +7,10 @@ import com.codelogium.portfolioservice.entity.User;
 import com.codelogium.portfolioservice.exception.EntityNotFoundException;
 import com.codelogium.portfolioservice.respositry.UserRepository;
 
+import jakarta.transaction.Transactional;
+
+import static com.codelogium.portfolioservice.util.EntityUtils.updateIfNotNull;
+
 import lombok.AllArgsConstructor;
 
 @Service
@@ -25,12 +29,20 @@ public class UserServiceImp implements UserService {
         return unwrapUser(id, userRepository.findById(id));
     }
 
+    @Transactional
     @Override
     public User updateUser(Long id, User newUser) {
-        //checks for not found entity
-        unwrapUser(id, userRepository.findById(id));
+        
+        User existingUser = unwrapUser(id, userRepository.findById(id));
         newUser.setId(id); // ignore ID request in the body as it might be intentionally changed
-        return userRepository.save(newUser);
+
+        // Only update fields if they're not null in newUser
+        updateIfNotNull(existingUser::setFirstName, newUser.getFirstName());
+        updateIfNotNull(existingUser::setLastName, newUser.getLastName());
+        updateIfNotNull(existingUser::setBirthDate, newUser.getBirthDate());
+        updateIfNotNull(existingUser::setProfession, newUser.getProfession());
+
+        return userRepository.save(existingUser);
     }
 
     public static User unwrapUser(Long id, Optional<User> optionalUser) {
