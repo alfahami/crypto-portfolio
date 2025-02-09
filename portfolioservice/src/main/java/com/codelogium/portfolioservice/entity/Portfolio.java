@@ -1,13 +1,12 @@
 package com.codelogium.portfolioservice.entity;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -42,7 +41,7 @@ public class Portfolio {
     private User user; //each portfolio -> One User
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Holding> holdings = new HashSet<>();
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Holding> holdings;
 
 }
