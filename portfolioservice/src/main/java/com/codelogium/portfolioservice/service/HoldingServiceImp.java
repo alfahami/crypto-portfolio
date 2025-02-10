@@ -24,6 +24,11 @@ public class HoldingServiceImp implements HoldingService {
     }
 
     @Override
+    public Holding retrieveHolding(Long id) {
+        return unwrapHolding(id, holdingRepository.findById(id));
+    }
+
+    @Override
     public Holding updateHolding(Long id, Holding newHolding) {
         Holding existingHolding = unwrapHolding(id, holdingRepository.findById(id));
         newHolding.setId(existingHolding.getId());
