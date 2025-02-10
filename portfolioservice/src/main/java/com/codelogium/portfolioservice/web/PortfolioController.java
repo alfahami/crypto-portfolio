@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 
 @RestController
 @AllArgsConstructor
@@ -32,6 +33,12 @@ public class PortfolioController {
     @GetMapping("/{id}")
     public ResponseEntity<Portfolio> getPortfolio(@PathVariable Long id) {
         return new ResponseEntity<>(portfolioService.getPortfolio(id), HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Portfolio> updatePortfolio(@PathVariable Long id, @RequestBody @Valid Portfolio portfolio) {
+        ;
+        return new ResponseEntity<>(portfolioService.updatePortfolio(id, portfolio), HttpStatus.OK);
     }
     
     @DeleteMapping("/{id}")
