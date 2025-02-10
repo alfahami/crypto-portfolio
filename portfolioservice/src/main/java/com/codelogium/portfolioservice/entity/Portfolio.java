@@ -35,7 +35,7 @@ public class Portfolio {
     @NotBlank(message = "portfolio name cannot be blank")
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonBackReference
     @JoinColumn(name = "user_id") // creates a foreign key
     private User user; //each portfolio -> One User
