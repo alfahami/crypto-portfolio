@@ -13,6 +13,9 @@ import com.codelogium.portfolioservice.entity.Portfolio;
 import com.codelogium.portfolioservice.service.PortfolioService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @AllArgsConstructor
@@ -23,8 +26,14 @@ public class PortfolioController {
 
     @PostMapping
     public ResponseEntity<Portfolio> createPortfolio(@PathVariable Long userId, @RequestBody @Valid Portfolio portfolio) {
-        return new ResponseEntity<>(portfolioService.createPortfolio(userId, portfolio), HttpStatus.valueOf(201));
+        return new ResponseEntity<>(portfolioService.createPortfolio(userId, portfolio), HttpStatus.CREATED);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Portfolio> getPortfolio(@PathVariable Long id) {
+        return new ResponseEntity<>(portfolioService.getPortfolio(id), HttpStatus.OK);
+    }
+    
 
 
 
