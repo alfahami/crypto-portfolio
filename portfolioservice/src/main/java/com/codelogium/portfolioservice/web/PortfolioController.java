@@ -1,5 +1,7 @@
 package com.codelogium.portfolioservice.web;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +41,11 @@ public class PortfolioController {
     public ResponseEntity<Portfolio> updatePortfolio(@PathVariable Long id, @RequestBody @Valid Portfolio portfolio) {
         ;
         return new ResponseEntity<>(portfolioService.updatePortfolio(id, portfolio), HttpStatus.OK);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Portfolio>> retrievePorfoliosByUserId(@PathVariable Long userId) {
+        return new ResponseEntity<>(portfolioService.retrivePortfolioByUserId(userId), HttpStatus.OK);
     }
     
     @DeleteMapping("/{id}")
