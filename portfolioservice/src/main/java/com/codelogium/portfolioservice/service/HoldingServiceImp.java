@@ -34,6 +34,12 @@ public class HoldingServiceImp implements HoldingService {
         return holdingRepository.save(existingHolding);
     }
 
+    @Override
+    public void removeHolding(Long id) {
+        Holding holding = unwrapHolding(id, holdingRepository.findById(id));
+        holdingRepository.delete(holding);
+    }
+
     public static Holding unwrapHolding(Long id, Optional<Holding> optHolding) {
         if(optHolding.isPresent()) return optHolding.get();
         else throw new EntityNotFoundException(id, Holding.class);
