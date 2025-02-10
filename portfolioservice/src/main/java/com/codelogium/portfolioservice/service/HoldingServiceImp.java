@@ -7,8 +7,10 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.codelogium.portfolioservice.entity.Holding;
+import com.codelogium.portfolioservice.entity.Portfolio;
 import com.codelogium.portfolioservice.exception.EntityNotFoundException;
 import com.codelogium.portfolioservice.respositry.HoldingRepository;
+import com.codelogium.portfolioservice.respositry.PortfolioRespository;
 
 import lombok.AllArgsConstructor;
 
@@ -17,9 +19,12 @@ import lombok.AllArgsConstructor;
 public class HoldingServiceImp implements HoldingService {
     
     private HoldingRepository holdingRepository;
+    private PortfolioRespository portfolioRespository;
 
     @Override
-    public Holding createHolding(Holding holding) {
+    public Holding createHolding(Long portfolioId, Holding holding) {
+        Portfolio portfolio = PortfolioServiceImp.unwrapPortfolio(portfolioId, portfolioRespository.findById(portfolioId));
+        holding.setPortfolio(portfolio);
         return this.holdingRepository.save(holding);
     }
 

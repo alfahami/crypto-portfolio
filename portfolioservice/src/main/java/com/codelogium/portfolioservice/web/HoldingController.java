@@ -27,8 +27,8 @@ public class HoldingController {
     private HoldingService holdingService;
 
     @PostMapping
-    public ResponseEntity<Holding> createHolding(@RequestBody @Valid Holding holding) {
-        return new ResponseEntity<>(holdingService.createHolding(holding), HttpStatus.CREATED);
+    public ResponseEntity<Holding> createHolding(@PathVariable Long portfolioId, @RequestBody @Valid Holding holding) {
+        return new ResponseEntity<>(holdingService.createHolding(portfolioId, holding), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
