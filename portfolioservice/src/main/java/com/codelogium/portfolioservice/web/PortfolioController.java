@@ -13,9 +13,9 @@ import com.codelogium.portfolioservice.entity.Portfolio;
 import com.codelogium.portfolioservice.service.PortfolioService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @AllArgsConstructor
@@ -34,8 +34,10 @@ public class PortfolioController {
         return new ResponseEntity<>(portfolioService.getPortfolio(id), HttpStatus.OK);
     }
     
-
-
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> removePortfolio(@PathVariable Long id) {
+        portfolioService.removePortfolio(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
     
 }
