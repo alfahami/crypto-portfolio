@@ -34,7 +34,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable Long id) {
-        return new ResponseEntity<>(userService.getUser(id), HttpStatus.OK);
+        return new ResponseEntity<>(userService.retrieveUser(id), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")

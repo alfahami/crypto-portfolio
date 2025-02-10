@@ -32,7 +32,7 @@ public class PortfolioController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Portfolio> getPortfolio(@PathVariable Long id) {
-        return new ResponseEntity<>(portfolioService.getPortfolio(id), HttpStatus.OK);
+        return new ResponseEntity<>(portfolioService.retrievePortfolio(id), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")

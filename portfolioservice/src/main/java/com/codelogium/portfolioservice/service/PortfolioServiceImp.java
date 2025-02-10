@@ -29,6 +29,12 @@ public class PortfolioServiceImp implements PortfolioService {
         return portfolioRespository.save(portfolio);
     }
 
+    @Override
+    public Portfolio retrievePortfolio(Long id) {
+        return unwrapPortfolio(id, portfolioRespository.findById(id));
+    }
+
+
     @Transactional
     @Override
     public Portfolio updatePortfolio(Long id, Portfolio newPortfolio) {
@@ -38,11 +44,6 @@ public class PortfolioServiceImp implements PortfolioService {
         updateIfNotNull(existingPortfolio::setName, newPortfolio.getName());
 
         return portfolioRespository.save(existingPortfolio);
-    }
-
-    @Override
-    public Portfolio getPortfolio(Long id) {
-        return unwrapPortfolio(id, portfolioRespository.findById(id));
     }
 
     @Override
