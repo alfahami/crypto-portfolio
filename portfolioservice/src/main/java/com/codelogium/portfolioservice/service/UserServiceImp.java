@@ -36,7 +36,7 @@ public class UserServiceImp implements UserService {
         User existingUser = unwrapUser(id, userRepository.findById(id));
         newUser.setId(id); // ignore ID request in the body as it might be intentionally changed
 
-        // Only update fields if they're not null in newUser
+        //Only update fields if they're not null in newUser
         updateIfNotNull(existingUser::setFirstName, newUser.getFirstName());
         updateIfNotNull(existingUser::setLastName, newUser.getLastName());
         updateIfNotNull(existingUser::setBirthDate, newUser.getBirthDate());
