@@ -29,22 +29,22 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody @Valid User user) {
-        return new ResponseEntity<>(userService.createUser(user), HttpStatus.valueOf(201));
+        return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable Long id) {
-        return new ResponseEntity<>(userService.getUser(id), HttpStatus.valueOf(200));
+        return new ResponseEntity<>(userService.getUser(id), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User newUser) {
-        return new ResponseEntity<>(userService.updateUser(id, newUser), HttpStatus.valueOf(200));
+        return new ResponseEntity<>(userService.updateUser(id, newUser), HttpStatus.OK);
     }
     
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> removeUser(@PathVariable Long id) {
         userService.removeUser(id);
-        return new ResponseEntity<>(HttpStatus.valueOf(204));
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
