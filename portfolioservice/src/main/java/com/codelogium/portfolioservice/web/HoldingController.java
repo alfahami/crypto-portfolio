@@ -3,6 +3,7 @@ package com.codelogium.portfolioservice.web;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +32,12 @@ public class HoldingController {
     @PatchMapping("/{id}")
     public ResponseEntity<Holding> updateHolding(@PathVariable Long id, @RequestBody @Valid Holding holding) {
         return new ResponseEntity<>(holdingService.updateHolding(id, holding), HttpStatus.OK);
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> removeHolding(@PathVariable Long id) {
+        holdingService.removeHolding(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }
