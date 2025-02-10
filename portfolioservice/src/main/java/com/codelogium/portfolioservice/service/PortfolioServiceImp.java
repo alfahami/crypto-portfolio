@@ -33,11 +33,11 @@ public class PortfolioServiceImp implements PortfolioService {
     @Override
     public Portfolio updatePortfolio(Long id, Portfolio newPortfolio) {
 
-        Portfolio portfolio = unwrapPortfolio(id, portfolioRespository.findById(id));
-        newPortfolio.setId(portfolio.getId()); // Ignore ID of request body
-        updateIfNotNull(portfolio::setName, newPortfolio.getName());
+        Portfolio existingPortfolio = unwrapPortfolio(id, portfolioRespository.findById(id));
+        newPortfolio.setId(existingPortfolio.getId()); // Ignore ID of request body
+        updateIfNotNull(existingPortfolio::setName, newPortfolio.getName());
 
-        return portfolioRespository.save(portfolio);
+        return portfolioRespository.save(existingPortfolio);
     }
 
     @Override
