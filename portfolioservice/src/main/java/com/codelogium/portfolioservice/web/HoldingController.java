@@ -16,6 +16,8 @@ import com.codelogium.portfolioservice.service.HoldingService;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @RestController
 @AllArgsConstructor
@@ -28,6 +30,12 @@ public class HoldingController {
     public ResponseEntity<Holding> createHolding(@RequestBody @Valid Holding holding) {
         return new ResponseEntity<>(holdingService.createHolding(holding), HttpStatus.CREATED);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Holding> retrieveHolding(@PathVariable Long id) {
+        return new ResponseEntity<>(holdingService.retrieveHolding(id), HttpStatus.OK);
+    }
+    
 
     @PatchMapping("/{id}")
     public ResponseEntity<Holding> updateHolding(@PathVariable Long id, @RequestBody @Valid Holding holding) {
