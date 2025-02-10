@@ -6,7 +6,7 @@ import com.codelogium.portfolioservice.entity.Portfolio;
 
 public interface PortfolioService {
     Portfolio createPortfolio(Long userId, Portfolio portfolio);
-    Portfolio retrievePortfolio(Long id);
+    Portfolio retrievePortfolio(Long portfolioId);
     Portfolio updatePortfolio(Long id, Portfolio newPortfolio);
     void removePortfolio(Long id);
     List<Portfolio> retrivePortfolioByUserId(Long userId);

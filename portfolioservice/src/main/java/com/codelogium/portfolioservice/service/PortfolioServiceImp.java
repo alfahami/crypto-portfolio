@@ -26,7 +26,7 @@ public class PortfolioServiceImp implements PortfolioService {
 
     @Override
     public Portfolio createPortfolio(Long userId, Portfolio portfolio) {
-        
+
         User user = UserServiceImp.unwrapUser(userId, userRepository.findById(userId));
         portfolio.setUser(user);
         return portfolioRepository.save(portfolio);
@@ -60,9 +60,8 @@ public class PortfolioServiceImp implements PortfolioService {
         portfolioRepository.delete(portfolio);
     }
 
-    public static Portfolio validateAndReturnPortfolioOwnership(Optional<Portfolio> optionalPortfolio) {
-        if(optionalPortfolio.isPresent()) return optionalPortfolio.get();
-        else throw new OwnershipException(Portfolio.class);
+    public static Portfolio validateAndGetPortfolio(Optional<Portfolio> optionalPortfolio) {
+        return optionalPortfolio.orElseThrow(() -> new OwnershipException(Portfolio.class));
     }
 
     public static Portfolio unwrapPortfolio(Long id, Optional<Portfolio> optPorfolio) {

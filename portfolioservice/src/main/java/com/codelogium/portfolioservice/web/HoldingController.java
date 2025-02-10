@@ -37,9 +37,9 @@ public class HoldingController {
         return new ResponseEntity<>(holdingService.retrieveHolding(id), HttpStatus.OK);
     }
     
-    @PatchMapping("/{id}")
-    public ResponseEntity<Holding> updateHolding(@PathVariable Long id, @RequestBody @Valid Holding holding) {
-        return new ResponseEntity<>(holdingService.updateHolding(id, holding), HttpStatus.OK);
+    @PatchMapping("/{holdingId}")
+    public ResponseEntity<Holding> updateHolding(@PathVariable Long holdingId, @PathVariable Long portfolioId, @PathVariable Long userId, @RequestBody @Valid Holding holding) {
+        return new ResponseEntity<>(holdingService.updateHolding(userId, portfolioId, holdingId, holding), HttpStatus.OK);
     }
 
     @GetMapping("/all")
