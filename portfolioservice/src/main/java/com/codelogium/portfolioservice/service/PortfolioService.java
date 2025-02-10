@@ -9,6 +9,6 @@ public interface PortfolioService {
     Portfolio retrievePortfolio(Long id);
     Portfolio updatePortfolio(Long id, Portfolio newPortfolio);
     void removePortfolio(Long id);
-    List<Portfolio> retrivePortfolioByUserId(Long id);
+    List<Portfolio> retrivePortfolioByUserId(Long userId);
 } 
 

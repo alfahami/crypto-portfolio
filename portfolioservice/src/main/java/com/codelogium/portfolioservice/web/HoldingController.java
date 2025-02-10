@@ -1,5 +1,7 @@
 package com.codelogium.portfolioservice.web;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +20,6 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 
-
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "users/{userId}/portfolios/{portfolioId}/holdings", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -27,8 +28,8 @@ public class HoldingController {
     private HoldingService holdingService;
 
     @PostMapping
-    public ResponseEntity<Holding> createHolding(@PathVariable Long portfolioId, @RequestBody @Valid Holding holding) {
-        return new ResponseEntity<>(holdingService.createHolding(portfolioId, holding), HttpStatus.CREATED);
+    public ResponseEntity<Holding> createHolding(@PathVariable Long userId, @PathVariable Long portfolioId, @RequestBody @Valid Holding holding) {
+        return new ResponseEntity<>(holdingService.createHolding(userId, portfolioId, holding), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -36,10 +37,14 @@ public class HoldingController {
         return new ResponseEntity<>(holdingService.retrieveHolding(id), HttpStatus.OK);
     }
     
-
     @PatchMapping("/{id}")
     public ResponseEntity<Holding> updateHolding(@PathVariable Long id, @RequestBody @Valid Holding holding) {
         return new ResponseEntity<>(holdingService.updateHolding(id, holding), HttpStatus.OK);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Holding>> retrieveHoldingsByPortfolioId(@PathVariable Long userId, @PathVariable Long portfolioId) {
+        return new ResponseEntity<>(holdingService.retrieveHoldingByPortfolioId(userId, portfolioId), HttpStatus.OK);
     }
     
     @DeleteMapping("/{id}")
@@ -47,5 +52,4 @@ public class HoldingController {
         holdingService.removeHolding(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 }

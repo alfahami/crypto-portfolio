@@ -9,5 +9,5 @@ import com.codelogium.portfolioservice.entity.Holding;
 public interface HoldingRepository extends JpaRepository<Holding, Long> {
     
     // Fetched all holdings that belongs to a portfolio by portfolio id
-    List<Holding> findByPortfolioId(Long id);
+    List<Holding> findByPortfolioId(Long portfolioId);
 }
