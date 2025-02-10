@@ -31,6 +31,12 @@ public class PortfolioServiceImp implements PortfolioService {
         return unwrapPortfolio(id, portfolioRespository.findById(id));
     }
 
+    @Override
+    public void removePortfolio(Long id) {
+        Portfolio portfolio = unwrapPortfolio(id, portfolioRespository.findById(id));
+        portfolioRespository.delete(portfolio);
+    }
+
     public static Portfolio unwrapPortfolio(Long id, Optional<Portfolio> optPorfolio) {
         if(optPorfolio.isPresent()) return optPorfolio.get();
         else throw new EntityNotFoundException(id, Portfolio.class);
