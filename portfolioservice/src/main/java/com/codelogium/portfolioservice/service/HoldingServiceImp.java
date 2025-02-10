@@ -1,5 +1,7 @@
 package com.codelogium.portfolioservice.service;
 
+import static com.codelogium.portfolioservice.util.EntityUtils.*;
+
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -21,8 +23,20 @@ public class HoldingServiceImp implements HoldingService {
         return this.holdingRepository.save(holding);
     }
 
+    @Override
+    public Holding updateHolding(Long id, Holding newHolding) {
+        Holding existingHolding = unwrapHolding(id, holdingRepository.findById(id));
+        newHolding.setId(existingHolding.getId());
+
+        updateIfNotNull(existingHolding::setSymbol, newHolding.getSymbol());
+        updateIfNotNull(existingHolding::setAmount, newHolding.getAmount());
+        
+        return holdingRepository.save(existingHolding);
+    }
+
     public static Holding unwrapHolding(Long id, Optional<Holding> optHolding) {
         if(optHolding.isPresent()) return optHolding.get();
         else throw new EntityNotFoundException(id, Holding.class);
     }
+
 }
