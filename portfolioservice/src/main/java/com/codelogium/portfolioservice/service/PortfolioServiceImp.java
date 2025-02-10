@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.codelogium.portfolioservice.entity.Portfolio;
 import com.codelogium.portfolioservice.entity.User;
 import com.codelogium.portfolioservice.exception.EntityNotFoundException;
+import com.codelogium.portfolioservice.exception.OwnershipException;
 import com.codelogium.portfolioservice.respositry.PortfolioRepository;
 import com.codelogium.portfolioservice.respositry.UserRepository;
 
@@ -25,6 +26,7 @@ public class PortfolioServiceImp implements PortfolioService {
 
     @Override
     public Portfolio createPortfolio(Long userId, Portfolio portfolio) {
+        
         User user = UserServiceImp.unwrapUser(userId, userRepository.findById(userId));
         portfolio.setUser(user);
         return portfolioRepository.save(portfolio);
@@ -34,7 +36,6 @@ public class PortfolioServiceImp implements PortfolioService {
     public Portfolio retrievePortfolio(Long id) {
         return unwrapPortfolio(id, portfolioRepository.findById(id));
     }
-
 
     @Transactional
     @Override
@@ -57,6 +58,11 @@ public class PortfolioServiceImp implements PortfolioService {
     public void removePortfolio(Long id) {
         Portfolio portfolio = unwrapPortfolio(id, portfolioRepository.findById(id));
         portfolioRepository.delete(portfolio);
+    }
+
+    public static Portfolio validateAndReturnPortfolioOwnership(Optional<Portfolio> optionalPortfolio) {
+        if(optionalPortfolio.isPresent()) return optionalPortfolio.get();
+        else throw new OwnershipException(Portfolio.class);
     }
 
     public static Portfolio unwrapPortfolio(Long id, Optional<Portfolio> optPorfolio) {
