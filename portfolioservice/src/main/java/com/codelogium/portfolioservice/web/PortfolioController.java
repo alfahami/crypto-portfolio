@@ -35,6 +35,9 @@ public class PortfolioController {
     @GetMapping("/{portfolioId}")
     public ResponseEntity<Portfolio> retrievePortfolio(@PathVariable Long portfolioId, @PathVariable Long userId) {
         return new ResponseEntity<>(portfolioService.retrievePortfolio(portfolioId, userId), HttpStatus.OK);
+    @GetMapping("/{portfolioId}")
+    public ResponseEntity<Portfolio> retrievePortfolio(@PathVariable Long portfolioId, @PathVariable Long userId) {
+        return new ResponseEntity<>(portfolioService.retrievePortfolio(portfolioId, userId), HttpStatus.OK);
     }
 
     @PatchMapping("/{portfolioId}")
