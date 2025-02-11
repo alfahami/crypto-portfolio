@@ -2,6 +2,7 @@ package com.codelogium.portfolioservice.service;
 
 import static com.codelogium.portfolioservice.util.EntityUtils.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,6 +65,12 @@ public class PortfolioServiceImp implements PortfolioService {
         
         Portfolio portfolio = unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
         portfolioRepository.delete(portfolio);
+    }
+
+    @Override
+    public BigDecimal valuation(Long userId, Long portfolioId, String base) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     // Other relation down level might need to check for user existance
