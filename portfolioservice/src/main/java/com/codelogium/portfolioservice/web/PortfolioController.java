@@ -32,25 +32,25 @@ public class PortfolioController {
         return new ResponseEntity<>(portfolioService.createPortfolio(userId, portfolio), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Portfolio> getPortfolio(@PathVariable Long id) {
-        return new ResponseEntity<>(portfolioService.retrievePortfolio(id), HttpStatus.OK);
+    @GetMapping("/{portfolioId}")
+    public ResponseEntity<Portfolio> retrievePortfolio(@PathVariable Long portfolioId, @PathVariable Long userId) {
+        return new ResponseEntity<>(portfolioService.retrievePortfolio(portfolioId, userId), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Portfolio> updatePortfolio(@PathVariable Long id, @RequestBody @Valid Portfolio portfolio) {
+    public ResponseEntity<Portfolio> updatePortfolio(@PathVariable Long portfolioId, @PathVariable Long userId, @RequestBody @Valid Portfolio portfolio) {
         ;
-        return new ResponseEntity<>(portfolioService.updatePortfolio(id, portfolio), HttpStatus.OK);
+        return new ResponseEntity<>(portfolioService.updatePortfolio(portfolioId, userId, portfolio), HttpStatus.OK);
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<Portfolio>> retrievePorfoliosByUserId(@PathVariable Long userId) {
-        return new ResponseEntity<>(portfolioService.retrivePortfolioByUserId(userId), HttpStatus.OK);
+        return new ResponseEntity<>(portfolioService.retrievePortfoliosByUserId(userId), HttpStatus.OK);
     }
     // TODO: Ensure deletion is only with owned holdings
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> removePortfolio(@PathVariable Long id) {
-        portfolioService.removePortfolio(id);
+    public ResponseEntity<HttpStatus> removePortfolio(@PathVariable Long userId, @PathVariable Long portfolioId) {
+        portfolioService.removePortfolio(userId, portfolioId);;
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     

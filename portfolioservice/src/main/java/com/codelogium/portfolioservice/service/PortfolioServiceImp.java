@@ -33,15 +33,16 @@ public class PortfolioServiceImp implements PortfolioService {
     }
 
     @Override
-    public Portfolio retrievePortfolio(Long id) {
-        return unwrapPortfolio(id, portfolioRepository.findById(id));
+    public Portfolio retrievePortfolio(Long portfolioId, Long userId) {
+        UserServiceImp.unwrapUser(userId, userRepository.findById(userId));
+        return unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
     }
  
     @Transactional // Commit changes correctly or rollback if failure
     @Override
-    public Portfolio updatePortfolio(Long id, Portfolio newPortfolio) {
+    public Portfolio updatePortfolio(Long portfolioId, Long userId, Portfolio newPortfolio) {
 
-        Portfolio existingPortfolio = unwrapPortfolio(id, portfolioRepository.findById(id));
+        Portfolio existingPortfolio = unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
         newPortfolio.setId(existingPortfolio.getId()); // Ignore ID of request body
         updateIfNotNull(existingPortfolio::setName, newPortfolio.getName());
 
@@ -49,14 +50,14 @@ public class PortfolioServiceImp implements PortfolioService {
     }
 
     @Override
-    public List<Portfolio> retrivePortfolioByUserId(Long id) {
-        UserServiceImp.unwrapUser(id, userRepository.findById(id));
-        return portfolioRepository.findByUserId(id);
+    public List<Portfolio> retrievePortfoliosByUserId(Long userId) {
+        UserServiceImp.unwrapUser(userId, userRepository.findById(userId));
+        return portfolioRepository.findByUserId(userId);
     }
 
     @Override
-    public void removePortfolio(Long id) {
-        Portfolio portfolio = unwrapPortfolio(id, portfolioRepository.findById(id));
+    public void removePortfolio(Long portfolioId, Long userId) {
+        Portfolio portfolio = unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
         portfolioRepository.delete(portfolio);
     }
 
@@ -65,8 +66,8 @@ public class PortfolioServiceImp implements PortfolioService {
         return optionalPortfolio.orElseThrow(() -> new OwnershipException(Portfolio.class));
     }
 
-    public static Portfolio unwrapPortfolio(Long id, Optional<Portfolio> optPorfolio) {
+    public static Portfolio unwrapPortfolio(Long portfolioId, Optional<Portfolio> optPorfolio) {
         if(optPorfolio.isPresent()) return optPorfolio.get();
-        else throw new EntityNotFoundException(id, Portfolio.class);
+        else throw new EntityNotFoundException(portfolioId, Portfolio.class);
     } 
 }
