@@ -28,29 +28,28 @@ public class HoldingController {
     private HoldingService holdingService;
 
     @PostMapping
-    public ResponseEntity<Holding> createHolding(@PathVariable Long userId, @PathVariable Long portfolioId, @RequestBody @Valid Holding holding) {
-        return new ResponseEntity<>(holdingService.createHolding(userId, portfolioId, holding), HttpStatus.CREATED);
+    public ResponseEntity<Holding> createHolding(@PathVariable Long portfolioId, @PathVariable Long userId, @RequestBody @Valid Holding holding) {
+        return new ResponseEntity<>(holdingService.createHolding(portfolioId, userId, holding), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Holding> retrieveHolding(@PathVariable Long id) {
-        return new ResponseEntity<>(holdingService.retrieveHolding(id), HttpStatus.OK);
+    @GetMapping("/{holdingId}")
+    public ResponseEntity<Holding> retrieveHolding(@PathVariable Long holdingId, @PathVariable Long portfolioId, @PathVariable Long userId) {
+        return new ResponseEntity<>(holdingService.retrieveHolding(holdingId, portfolioId, userId), HttpStatus.OK);
     }
     
     @PatchMapping("/{holdingId}")
     public ResponseEntity<Holding> updateHolding(@PathVariable Long holdingId, @PathVariable Long portfolioId, @PathVariable Long userId, @RequestBody @Valid Holding holding) {
-        return new ResponseEntity<>(holdingService.updateHolding(userId, portfolioId, holdingId, holding), HttpStatus.OK);
+        return new ResponseEntity<>(holdingService.updateHolding(holdingId, portfolioId, userId, holding), HttpStatus.OK);
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<Holding>> retrieveHoldingsByPortfolioId(@PathVariable Long userId, @PathVariable Long portfolioId) {
-        return new ResponseEntity<>(holdingService.retrieveHoldingByPortfolioId(userId, portfolioId), HttpStatus.OK);
+        return new ResponseEntity<>(holdingService.retrieveHoldingsByPortfolioId(portfolioId, userId), HttpStatus.OK);
     }
     
-    // Ensure that deletion is only with owned child entity
-    @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> removeHolding(@PathVariable Long id) {
-        holdingService.removeHolding(id);
+    @DeleteMapping("/{holdingId}")
+    public ResponseEntity<HttpStatus> removeHolding(@PathVariable Long holdingId, @PathVariable Long portfolioId, @PathVariable Long userId) {
+        holdingService.removeHolding(holdingId, portfolioId, userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

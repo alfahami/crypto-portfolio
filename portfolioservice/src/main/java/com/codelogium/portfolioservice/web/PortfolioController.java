@@ -37,7 +37,7 @@ public class PortfolioController {
         return new ResponseEntity<>(portfolioService.retrievePortfolio(portfolioId, userId), HttpStatus.OK);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{portfolioId}")
     public ResponseEntity<Portfolio> updatePortfolio(@PathVariable Long portfolioId, @PathVariable Long userId, @RequestBody @Valid Portfolio portfolio) {
         ;
         return new ResponseEntity<>(portfolioService.updatePortfolio(portfolioId, userId, portfolio), HttpStatus.OK);
@@ -47,10 +47,10 @@ public class PortfolioController {
     public ResponseEntity<List<Portfolio>> retrievePorfoliosByUserId(@PathVariable Long userId) {
         return new ResponseEntity<>(portfolioService.retrievePortfoliosByUserId(userId), HttpStatus.OK);
     }
-    // TODO: Ensure deletion is only with owned holdings
-    @DeleteMapping("/{id}")
+    
+    @DeleteMapping("/{portfolioId}")
     public ResponseEntity<HttpStatus> removePortfolio(@PathVariable Long userId, @PathVariable Long portfolioId) {
-        portfolioService.removePortfolio(userId, portfolioId);;
+        portfolioService.removePortfolio(portfolioId, userId);;
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     
