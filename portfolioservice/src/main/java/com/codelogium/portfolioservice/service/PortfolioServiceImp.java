@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.codelogium.portfolioservice.entity.Portfolio;
 import com.codelogium.portfolioservice.entity.User;
 import com.codelogium.portfolioservice.exception.EntityNotFoundException;
-import com.codelogium.portfolioservice.exception.OwnershipException;
 import com.codelogium.portfolioservice.respositry.PortfolioRepository;
 import com.codelogium.portfolioservice.respositry.UserRepository;
 
@@ -35,12 +34,15 @@ public class PortfolioServiceImp implements PortfolioService {
     @Override
     public Portfolio retrievePortfolio(Long portfolioId, Long userId) {
         UserServiceImp.unwrapUser(userId, userRepository.findById(userId));
+        
         return unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
     }
  
     @Transactional // Commit changes correctly or rollback if failure
     @Override
     public Portfolio updatePortfolio(Long portfolioId, Long userId, Portfolio newPortfolio) {
+
+        UserServiceImp.unwrapUser(userId, userRepository.findById(userId));
 
         Portfolio existingPortfolio = unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
         newPortfolio.setId(existingPortfolio.getId()); // Ignore ID of request body
@@ -57,15 +59,18 @@ public class PortfolioServiceImp implements PortfolioService {
 
     @Override
     public void removePortfolio(Long portfolioId, Long userId) {
+
+        UserServiceImp.unwrapUser(userId, userRepository.findById(userId));
+        
         Portfolio portfolio = unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
         portfolioRepository.delete(portfolio);
     }
 
-    // ensure portfolio exists and is owned by the calling entity
-    public static Portfolio validateAndGetPortfolio(Optional<Portfolio> optionalPortfolio) {
-        return optionalPortfolio.orElseThrow(() -> new OwnershipException(Portfolio.class));
+    // Other relation down level might need to check for user existance
+    public void validateUserExists(Long userId) {
+        if(!userRepository.existsById(userId)) throw new EntityNotFoundException(userId, User.class);
     }
-
+    
     public static Portfolio unwrapPortfolio(Long portfolioId, Optional<Portfolio> optPorfolio) {
         if(optPorfolio.isPresent()) return optPorfolio.get();
         else throw new EntityNotFoundException(portfolioId, Portfolio.class);

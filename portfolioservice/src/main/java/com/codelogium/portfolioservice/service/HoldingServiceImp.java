@@ -9,9 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.codelogium.portfolioservice.entity.Holding;
 import com.codelogium.portfolioservice.entity.Portfolio;
-import com.codelogium.portfolioservice.entity.User;
 import com.codelogium.portfolioservice.exception.EntityNotFoundException;
-import com.codelogium.portfolioservice.exception.OwnershipException;
 import com.codelogium.portfolioservice.respositry.HoldingRepository;
 import com.codelogium.portfolioservice.respositry.PortfolioRepository;
 
@@ -24,14 +22,14 @@ public class HoldingServiceImp implements HoldingService {
     
     private HoldingRepository holdingRepository;
     private PortfolioRepository portfolioRepository;
+    private PortfolioServiceImp portfolioServiceImp;
 
     @Override
-    public Holding createHolding(Long userId, Long portfolioId, Holding holding) {
-        // Check if user exists by trying to find any portfolio for this user
-        validateUserExists(userId, portfolioRepository.existsById(userId));
+    public Holding createHolding(Long portfolioId, Long userId , Holding holding) {
 
+        portfolioServiceImp.validateUserExists(userId);
         // Checks and Retrieve the portfolio that belongs to the calling user
-        Portfolio portfolio = PortfolioServiceImp.validateAndGetPortfolio(portfolioRepository.findByIdAndUserId(portfolioId, userId));
+        Portfolio portfolio = PortfolioServiceImp.unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
         
         // Setting the relation portfolio <- holding
         holding.setPortfolio(portfolio);
@@ -39,19 +37,26 @@ public class HoldingServiceImp implements HoldingService {
     }
 
     @Override
-    public Holding retrieveHolding(Long id) {
-        return unwrapHolding(id, holdingRepository.findById(id));
+    public Holding retrieveHolding(Long holdingId, Long portfolioId, Long userId) {
+
+        // Relying on portfolio service to check for user as the uri could be tampered at this level
+        portfolioServiceImp.validateUserExists(userId);
+
+        PortfolioServiceImp.unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
+
+        return unwrapHolding(holdingId, holdingRepository.findByIdAndPortfolioIdAndPortfolioUserId(holdingId, portfolioId, userId));
     }
 
     @Transactional // commit changes correcly or roll back completely if failure
     @Override
-    public Holding updateHolding(Long userId, Long portfolioId, Long holdingId, Holding newHolding) {
+    public Holding updateHolding(Long holdingId, Long portfolioId,Long userId, Holding newHolding) {
 
-        validateUserExists(userId, portfolioRepository.existsById(userId));
+        portfolioServiceImp.validateUserExists(userId);
+
         // Checks if the holding exists
-        unwrapHolding(holdingId, holdingRepository.findById(holdingId));
         // Ensure ownership of user -> portfolio -> holding
-        Holding existingHolding = validateAndGetHolding(holdingRepository.findByIdAndPortfolioIdAndPortfolioUserId(holdingId, portfolioId, userId));
+        Holding existingHolding = unwrapHolding(holdingId, holdingRepository.findByIdAndPortfolioIdAndPortfolioUserId(holdingId, portfolioId, userId));
+
         // Ignore request body ID, could be changed tho
         newHolding.setId(existingHolding.getId());
 
@@ -62,33 +67,31 @@ public class HoldingServiceImp implements HoldingService {
     }
 
     @Override
-    public List<Holding> retrieveHoldingByPortfolioId(Long userId, Long portfolioId) {
-        // check if user exists
-        validateUserExists(userId, portfolioRepository.existsById(userId));
+    public List<Holding> retrieveHoldingsByPortfolioId(Long portfolioId, Long userId) {
+
+        // Relying on portfolio service to check for user as the uri could be tampered at this level
+        portfolioServiceImp.validateUserExists(userId);
+
         // Ensure ownership of user -> portfolio
-        PortfolioServiceImp.validateAndGetPortfolio(portfolioRepository.findByIdAndUserId(portfolioId, userId));
+        PortfolioServiceImp.unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
 
         return holdingRepository.findByPortfolioId(portfolioId);
     }
 
     @Override
-    public void removeHolding(Long id) {
-        Holding holding = unwrapHolding(id, holdingRepository.findById(id));
+    public void removeHolding(Long holdingId, Long portfolioId, Long userId) {
+        // Relying on portfolio service to check for user as the uri could be tampered at this level
+        portfolioServiceImp.validateUserExists(userId);
+
+        PortfolioServiceImp.unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
+
+        Holding holding = unwrapHolding(portfolioId, holdingRepository.findByIdAndPortfolioIdAndPortfolioUserId(holdingId, portfolioId, userId));
+
         holdingRepository.delete(holding);
     }
 
-    // Ensure a holding exists before proceeding
-    public static Holding validateAndGetHolding(Optional<Holding> optionalHolding) {
-        return optionalHolding.orElseThrow(() -> new OwnershipException(Holding.class));
-    }
-
-    // Ensure that userId was not tempered at this level of the relation
-    public static void validateUserExists(Long userId, boolean bool) {
-        if(bool == false) throw new EntityNotFoundException(userId, User.class);
-    }
-
-    public static Holding unwrapHolding(Long id, Optional<Holding> optHolding) {
+    public static Holding unwrapHolding(Long holdingId, Optional<Holding> optHolding) {
         if(optHolding.isPresent()) return optHolding.get();
-        else throw new EntityNotFoundException(id, Holding.class);
+        else throw new EntityNotFoundException(holdingId, Holding.class);
     }
 }
