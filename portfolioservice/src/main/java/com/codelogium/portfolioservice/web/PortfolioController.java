@@ -47,7 +47,7 @@ public class PortfolioController {
     public ResponseEntity<List<Portfolio>> retrievePorfoliosByUserId(@PathVariable Long userId) {
         return new ResponseEntity<>(portfolioService.retrivePortfolioByUserId(userId), HttpStatus.OK);
     }
-    
+    // TODO: Ensure deletion is only with owned holdings
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> removePortfolio(@PathVariable Long id) {
         portfolioService.removePortfolio(id);

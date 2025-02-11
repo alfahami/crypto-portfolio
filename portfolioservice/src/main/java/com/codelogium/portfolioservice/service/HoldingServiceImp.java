@@ -43,7 +43,7 @@ public class HoldingServiceImp implements HoldingService {
         return unwrapHolding(id, holdingRepository.findById(id));
     }
 
-    @Transactional // Ensure that changes are committed correcly or rolled back completely in case of failure
+    @Transactional // commit changes correcly or roll back completely if failure
     @Override
     public Holding updateHolding(Long userId, Long portfolioId, Long holdingId, Holding newHolding) {
 

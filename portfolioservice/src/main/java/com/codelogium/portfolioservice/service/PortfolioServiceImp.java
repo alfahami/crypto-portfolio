@@ -36,8 +36,8 @@ public class PortfolioServiceImp implements PortfolioService {
     public Portfolio retrievePortfolio(Long id) {
         return unwrapPortfolio(id, portfolioRepository.findById(id));
     }
-
-    @Transactional
+ 
+    @Transactional // Commit changes correctly or rollback if failure
     @Override
     public Portfolio updatePortfolio(Long id, Portfolio newPortfolio) {
 
@@ -60,6 +60,7 @@ public class PortfolioServiceImp implements PortfolioService {
         portfolioRepository.delete(portfolio);
     }
 
+    // ensure portfolio exists and is owned by the calling entity
     public static Portfolio validateAndGetPortfolio(Optional<Portfolio> optionalPortfolio) {
         return optionalPortfolio.orElseThrow(() -> new OwnershipException(Portfolio.class));
     }

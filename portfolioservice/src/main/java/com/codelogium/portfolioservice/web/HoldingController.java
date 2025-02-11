@@ -47,6 +47,7 @@ public class HoldingController {
         return new ResponseEntity<>(holdingService.retrieveHoldingByPortfolioId(userId, portfolioId), HttpStatus.OK);
     }
     
+    // Ensure that deletion is only with owned child entity
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> removeHolding(@PathVariable Long id) {
         holdingService.removeHolding(id);

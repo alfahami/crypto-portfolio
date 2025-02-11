@@ -29,7 +29,7 @@ public class UserServiceImp implements UserService {
         return unwrapUser(id, userRepository.findById(id));
     }
 
-    @Transactional
+    @Transactional // commit changes or roll back completely if failure
     @Override
     public User updateUser(Long id, User newUser) {
         
