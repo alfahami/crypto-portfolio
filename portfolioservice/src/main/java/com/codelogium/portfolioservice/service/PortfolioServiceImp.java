@@ -8,21 +8,24 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.codelogium.portfolioservice.entity.Portfolio;
 import com.codelogium.portfolioservice.entity.User;
 import com.codelogium.portfolioservice.exception.EntityNotFoundException;
 import com.codelogium.portfolioservice.respositry.PortfolioRepository;
 import com.codelogium.portfolioservice.respositry.UserRepository;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
 public class PortfolioServiceImp implements PortfolioService {
-    
+
     private PortfolioRepository portfolioRepository;
     private UserRepository userRepository;
+    private static WebClient webClient;
 
     @Override
     public Portfolio createPortfolio(Long userId, Portfolio portfolio) {
@@ -35,17 +38,18 @@ public class PortfolioServiceImp implements PortfolioService {
     @Override
     public Portfolio retrievePortfolio(Long portfolioId, Long userId) {
         UserServiceImp.unwrapUser(userId, userRepository.findById(userId));
-        
+
         return unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
     }
- 
+
     @Transactional // Commit changes correctly or rollback if failure
     @Override
     public Portfolio updatePortfolio(Long portfolioId, Long userId, Portfolio newPortfolio) {
 
         UserServiceImp.unwrapUser(userId, userRepository.findById(userId));
 
-        Portfolio existingPortfolio = unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
+        Portfolio existingPortfolio = unwrapPortfolio(portfolioId,
+                portfolioRepository.findByIdAndUserId(portfolioId, userId));
         newPortfolio.setId(existingPortfolio.getId()); // Ignore ID of request body
         updateIfNotNull(existingPortfolio::setName, newPortfolio.getName());
 
@@ -62,24 +66,41 @@ public class PortfolioServiceImp implements PortfolioService {
     public void removePortfolio(Long portfolioId, Long userId) {
 
         UserServiceImp.unwrapUser(userId, userRepository.findById(userId));
-        
+
         Portfolio portfolio = unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
         portfolioRepository.delete(portfolio);
     }
 
     @Override
     public BigDecimal valuation(Long userId, Long portfolioId, String base) {
-        // TODO Auto-generated method stub
+
         return null;
+    }
+
+    // Retrieves the current price of crypto using exchangerateservice local api
+    public static BigDecimal getCurrentPrice(String symbol, String base) {
+        JsonNode data = webClient.get().uri(uriBuilder -> uriBuilder.path("/exchange-rate")
+        .queryParam("symbol", symbol)
+        .queryParam("base", base)
+        .build())
+        .retrieve()
+        .bodyToMono(JsonNode.class)
+        .block();
+
+        String price = data.get("price").toString();
+        return new BigDecimal(price);
     }
 
     // Other relation down level might need to check for user existance
     public void validateUserExists(Long userId) {
-        if(!userRepository.existsById(userId)) throw new EntityNotFoundException(userId, User.class);
+        if (!userRepository.existsById(userId))
+            throw new EntityNotFoundException(userId, User.class);
     }
-    
+
     public static Portfolio unwrapPortfolio(Long portfolioId, Optional<Portfolio> optPorfolio) {
-        if(optPorfolio.isPresent()) return optPorfolio.get();
-        else throw new EntityNotFoundException(portfolioId, Portfolio.class);
-    } 
+        if (optPorfolio.isPresent())
+            return optPorfolio.get();
+        else
+            throw new EntityNotFoundException(portfolioId, Portfolio.class);
+    }
 }
