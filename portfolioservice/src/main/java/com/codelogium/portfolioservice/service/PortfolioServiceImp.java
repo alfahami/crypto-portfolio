@@ -73,17 +73,17 @@ public class PortfolioServiceImp implements PortfolioService {
     }
 
     @Override
-    public BigDecimal valuation(Long userId, Long portfolioId, String symbol, String base) {
+    public BigDecimal valuation(Long userId, Long portfolioId, String base) {
         // check if the user exists, uri param was not tempered
         validateUserExists(userId);
 
         Portfolio portfolio = unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
-        
+
         // initialize the results to accumulate the total valuation
         BigDecimal result = BigDecimal.ZERO;
         if(portfolio.getHoldings() != null) {
             for (Holding holding : portfolio.getHoldings()) {
-                result = result.add(holding.getAmount().multiply(getCurrentPrice(symbol, base)));    
+                result = result.add(holding.getAmount().multiply(getCurrentPrice(holding.getSymbol(), base)));    
             }
             return result;
         }
