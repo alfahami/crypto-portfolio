@@ -87,7 +87,7 @@ public class PortfolioServiceImp implements PortfolioService {
             }
             return result;
         }
-        else throw new RuntimeException("Portfolio doesn't have holdings yet");
+        else throw new EntityNotFoundException("Portfolio doesn't have holdings yet");
     }
 
     // Retrieves the current price of crypto using exchangerateservice local api
