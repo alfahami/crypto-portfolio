@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono;
 @AllArgsConstructor
 public class ExchangeRateServiceImpl implements ExchangeRateService {
 
-        private WebClient webClient;
+        private final WebClient webClient;
 
     /**
      * Fetches cryptocurrency price data using WebClient, processes the raw JSON response, and maps it to a CryptoPrice object containing the symbol, base currency, and price.
