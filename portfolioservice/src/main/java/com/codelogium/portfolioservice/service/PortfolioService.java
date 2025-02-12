@@ -12,6 +12,6 @@ public interface PortfolioService {
     void removePortfolio(Long userId, Long portfolioId);
     List<Portfolio> retrievePortfoliosByUserId(Long userId);
 
-    BigDecimal valuation(Long userId, Long portfolioId, String base);
+    BigDecimal valuation(Long userId, Long portfolioId, String symbol, String base);
 } 
 

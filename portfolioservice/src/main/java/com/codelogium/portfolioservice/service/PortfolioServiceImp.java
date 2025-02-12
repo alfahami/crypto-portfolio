@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.codelogium.portfolioservice.entity.Holding;
 import com.codelogium.portfolioservice.entity.Portfolio;
 import com.codelogium.portfolioservice.entity.User;
 import com.codelogium.portfolioservice.exception.EntityNotFoundException;
@@ -72,9 +73,21 @@ public class PortfolioServiceImp implements PortfolioService {
     }
 
     @Override
-    public BigDecimal valuation(Long userId, Long portfolioId, String base) {
+    public BigDecimal valuation(Long userId, Long portfolioId, String symbol, String base) {
+        // check if the user exists, uri param was not tempered
+        validateUserExists(userId);
 
-        return null;
+        Portfolio portfolio = unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
+        
+        // initialize the results to accumulate the total valuation
+        BigDecimal result = BigDecimal.ZERO;
+        if(portfolio.getHoldings() != null) {
+            for (Holding holding : portfolio.getHoldings()) {
+                result = result.add(holding.getAmount().multiply(getCurrentPrice(symbol, base)));    
+            }
+            return result;
+        }
+        else throw new RuntimeException("Portfolio doesn't have holdings yet");
     }
 
     // Retrieves the current price of crypto using exchangerateservice local api
