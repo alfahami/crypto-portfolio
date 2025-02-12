@@ -26,7 +26,7 @@ public class PortfolioServiceImp implements PortfolioService {
 
     private PortfolioRepository portfolioRepository;
     private UserRepository userRepository;
-    private static WebClient webClient;
+    private final WebClient webClient;
 
     @Override
     public Portfolio createPortfolio(Long userId, Portfolio portfolio) {
@@ -79,7 +79,7 @@ public class PortfolioServiceImp implements PortfolioService {
 
         Portfolio portfolio = unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
 
-        // initialize the results to accumulate the total valuation
+        // initialize the result to accumulate the total valuation
         BigDecimal result = BigDecimal.ZERO;
         if(portfolio.getHoldings() != null) {
             for (Holding holding : portfolio.getHoldings()) {
@@ -91,7 +91,7 @@ public class PortfolioServiceImp implements PortfolioService {
     }
 
     // Retrieves the current price of crypto using exchangerateservice local api
-    public static BigDecimal getCurrentPrice(String symbol, String base) {
+    public BigDecimal getCurrentPrice(String symbol, String base) {
         JsonNode data = webClient.get().uri(uriBuilder -> uriBuilder.path("/exchange-rate")
         .queryParam("symbol", symbol)
         .queryParam("base", base)
