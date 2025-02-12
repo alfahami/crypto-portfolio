@@ -1,5 +1,6 @@
 package com.codelogium.portfolioservice.web;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @AllArgsConstructor
@@ -47,6 +50,12 @@ public class PortfolioController {
     public ResponseEntity<List<Portfolio>> retrievePorfoliosByUserId(@PathVariable Long userId) {
         return new ResponseEntity<>(portfolioService.retrievePortfoliosByUserId(userId), HttpStatus.OK);
     }
+
+    @GetMapping("/{portfolioId}/valuation")
+    public ResponseEntity<BigDecimal> getValuation(@PathVariable Long portfolioId, @PathVariable Long userId, @RequestParam String base) {
+        return new ResponseEntity<>(portfolioService.valuation(userId, portfolioId, base), HttpStatus.OK);
+    }
+    
     
     @DeleteMapping("/{portfolioId}")
     public ResponseEntity<HttpStatus> removePortfolio(@PathVariable Long userId, @PathVariable Long portfolioId) {
