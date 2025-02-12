@@ -52,6 +52,8 @@ public class HoldingServiceImp implements HoldingService {
     public Holding updateHolding(Long holdingId, Long portfolioId,Long userId, Holding newHolding) {
 
         portfolioServiceImp.validateUserExists(userId);
+        
+        PortfolioServiceImp.unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
 
         // Checks if the holding exists
         // Ensure ownership of user -> portfolio -> holding
