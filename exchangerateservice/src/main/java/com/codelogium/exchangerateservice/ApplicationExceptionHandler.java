@@ -1,5 +1,7 @@
 package com.codelogium.exchangerateservice;
 
+import java.util.Arrays;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +22,7 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 
     @ExceptionHandler(CryptoException.class)
     public ResponseEntity<Object> handleCryptoException(CryptoException ex) {
-        ErrorResponse error = new ErrorResponse(ex.getLocalizedMessage());
+        ErrorResponse error = new ErrorResponse(Arrays.asList(ex.getLocalizedMessage()));
         return new ResponseEntity<>(error, ex.getStatus());
     }
 
@@ -30,7 +32,7 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
             @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull ServerWebExchange exchange) {
 
         
-        ErrorResponse error = new ErrorResponse(ex.getReason());
+        ErrorResponse error = new ErrorResponse(Arrays.asList(ex.getReason()));
 
         return Mono.just(ResponseEntity.badRequest().body(error));
     }
