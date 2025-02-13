@@ -1,10 +1,13 @@
 package com.codelogium.portfolioservice;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler;
@@ -27,6 +30,18 @@ public class ApplicationExceptionHanlder extends ResponseEntityExceptionHandler 
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+                List<String> errors = new ArrayList<>();
+
+                ex.getBindingResult().getAllErrors().forEach((error) -> errors.add(error.getDefaultMessage()));
+
+                ErrorResponse errorResponse = new ErrorResponse(errors);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
     @Override
     protected Mono<ResponseEntity<Object>> handleMissingRequestValueException(MissingRequestValueException ex,
             HttpHeaders headers, HttpStatusCode status, ServerWebExchange exchange) {
@@ -34,5 +49,5 @@ public class ApplicationExceptionHanlder extends ResponseEntityExceptionHandler 
 
         return Mono.just(ResponseEntity.badRequest().body(error));
     }
-    
+
 }
