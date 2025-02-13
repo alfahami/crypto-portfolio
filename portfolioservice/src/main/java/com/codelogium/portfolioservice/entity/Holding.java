@@ -11,24 +11,26 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 @Data
 @Entity
 @NoArgsConstructor
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Table(name = "holdings")
 public class Holding {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NonNull
+
+    @NotBlank(message = "Symbol cannot be null or blank")
     private String symbol;
-    @NonNull
+
+    @NotBlank(message = "Amount cannot be null or blank")
     private BigDecimal amount;
 
     @ManyToOne

@@ -15,15 +15,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 @Data
 @Entity
 @NoArgsConstructor
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Table(name = "portfolios")
 public class Portfolio {
 
@@ -31,8 +30,7 @@ public class Portfolio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NonNull
-    @NotBlank(message = "portfolio name cannot be blank")
+    @NotBlank(message = "portfolio name cannot be null or blank")
     private String name;
 
     @ManyToOne(fetch = FetchType.EAGER)

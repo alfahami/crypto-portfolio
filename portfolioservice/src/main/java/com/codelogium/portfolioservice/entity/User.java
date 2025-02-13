@@ -10,16 +10,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 @Data
 @Entity
 @NoArgsConstructor
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Table(name = "users")
 public class User {
 
@@ -27,20 +27,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NonNull
-    @NotBlank(message = "First name cannot be blank")
+    @NotBlank(message = "First name cannot be null blank")
     private String firstName;
 
-    @NonNull
-    @NotBlank(message = "Last name cannot be blank")
+    @NotBlank(message = "Last name cannot be null or blank")
     private String lastName;
 
     @Past
-    @NonNull
+    @NotNull(message = "Birth date is required")
     private LocalDate birthDate;
 
-    @NonNull
-    @NotBlank(message = "Profession cannot be blank")
+    @NotBlank(message = "Profession cannot be null or blank")
     private String profession;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) 
