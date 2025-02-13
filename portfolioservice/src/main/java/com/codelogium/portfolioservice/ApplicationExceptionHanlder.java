@@ -1,5 +1,6 @@
 package com.codelogium.portfolioservice;
 
+import java.util.Arrays;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -22,14 +23,14 @@ public class ApplicationExceptionHanlder extends ResponseEntityExceptionHandler 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Object> handleResourceNotFoundException(ResourceNotFoundException ex) {
 
-        ErrorResponse error = new ErrorResponse(ex.getMessage());
+        ErrorResponse error = new ErrorResponse(Arrays.asList(ex.getMessage()));
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @Override
     protected Mono<ResponseEntity<Object>> handleMissingRequestValueException(MissingRequestValueException ex,
             HttpHeaders headers, HttpStatusCode status, ServerWebExchange exchange) {
-        ErrorResponse error = new ErrorResponse(ex.getReason());
+        ErrorResponse error = new ErrorResponse(Arrays.asList(ex.getReason()));
 
         return Mono.just(ResponseEntity.badRequest().body(error));
     }
