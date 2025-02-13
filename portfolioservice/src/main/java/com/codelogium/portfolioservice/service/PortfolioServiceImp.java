@@ -13,7 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.codelogium.portfolioservice.entity.Holding;
 import com.codelogium.portfolioservice.entity.Portfolio;
 import com.codelogium.portfolioservice.entity.User;
-import com.codelogium.portfolioservice.exception.EntityNotFoundException;
+import com.codelogium.portfolioservice.exception.ResourceNotFoundException;
 import com.codelogium.portfolioservice.respositry.PortfolioRepository;
 import com.codelogium.portfolioservice.respositry.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -87,7 +87,7 @@ public class PortfolioServiceImp implements PortfolioService {
             }
             return result;
         }
-        else throw new EntityNotFoundException("Portfolio doesn't have holdings yet");
+        else throw new ResourceNotFoundException("Portfolio doesn't have holdings yet");
     }
 
     // Retrieves the current price of crypto using exchangerateservice local api
@@ -107,13 +107,13 @@ public class PortfolioServiceImp implements PortfolioService {
     // Other relation down level might need to check for user existance
     public void validateUserExists(Long userId) {
         if (!userRepository.existsById(userId))
-            throw new EntityNotFoundException(userId, User.class);
+            throw new ResourceNotFoundException(userId, User.class);
     }
 
     public static Portfolio unwrapPortfolio(Long portfolioId, Optional<Portfolio> optPorfolio) {
         if (optPorfolio.isPresent())
             return optPorfolio.get();
         else
-            throw new EntityNotFoundException(portfolioId, Portfolio.class);
+            throw new ResourceNotFoundException(portfolioId, Portfolio.class);
     }
 }

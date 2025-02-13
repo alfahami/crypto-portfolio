@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.codelogium.portfolioservice.entity.Holding;
 import com.codelogium.portfolioservice.entity.Portfolio;
-import com.codelogium.portfolioservice.exception.EntityNotFoundException;
+import com.codelogium.portfolioservice.exception.ResourceNotFoundException;
 import com.codelogium.portfolioservice.respositry.HoldingRepository;
 import com.codelogium.portfolioservice.respositry.PortfolioRepository;
 
@@ -94,6 +94,6 @@ public class HoldingServiceImp implements HoldingService {
 
     public static Holding unwrapHolding(Long holdingId, Optional<Holding> optHolding) {
         if(optHolding.isPresent()) return optHolding.get();
-        else throw new EntityNotFoundException(holdingId, Holding.class);
+        else throw new ResourceNotFoundException(holdingId, Holding.class);
     }
 }

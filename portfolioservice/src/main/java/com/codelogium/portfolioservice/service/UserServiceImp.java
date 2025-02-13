@@ -4,7 +4,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.codelogium.portfolioservice.entity.User;
-import com.codelogium.portfolioservice.exception.EntityNotFoundException;
+import com.codelogium.portfolioservice.exception.ResourceNotFoundException;
 import com.codelogium.portfolioservice.respositry.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -53,6 +53,6 @@ public class UserServiceImp implements UserService {
 
     public static User unwrapUser(Long id, Optional<User> optionalUser) {
         if(optionalUser.isPresent()) return optionalUser.get();
-        else throw new EntityNotFoundException(id, User.class);
+        else throw new ResourceNotFoundException(id, User.class);
     }
 }
