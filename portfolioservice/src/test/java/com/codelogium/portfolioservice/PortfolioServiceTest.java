@@ -57,10 +57,10 @@ public class PortfolioServiceTest {
     @Test
     void shouldCreatePortfolioSuccessfully() {
         // Mock
-        User user = new User(1L, "John", "Doe", LocalDate.parse("1999-09-24"), "Developer", null);
-        Portfolio portfolio = new Portfolio(1L, "Tech Guru Investment", user, new ArrayList<>());
+        User testUser = new User(1L, "John", "Doe", LocalDate.parse("1999-09-24"), "Developer", null);
+        Portfolio portfolio = new Portfolio(1L, "Tech Guru Investment", testUser, new ArrayList<>());
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(portfolioRepository.save(portfolio)).thenReturn(portfolio);
 
         // Act
