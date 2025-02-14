@@ -1,5 +1,6 @@
 package com.codelogium.portfolioservice.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -40,6 +41,6 @@ public class Portfolio {
 
     @JsonManagedReference
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Holding> holdings;
+    private List<Holding> holdings = new ArrayList<>(); // Prevents orphanRemoval errors
 
 }

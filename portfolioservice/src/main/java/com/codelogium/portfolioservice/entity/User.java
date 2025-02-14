@@ -1,6 +1,7 @@
 package com.codelogium.portfolioservice.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -41,5 +42,5 @@ public class User {
     private String profession;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) 
-    private List<Portfolio> portfolios; // One User -> Many Portfolios
+    private List<Portfolio> portfolios = new ArrayList<>(); // One User -> Many Portfolios | prevents orphanRemoval errors
 }
