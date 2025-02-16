@@ -99,4 +99,17 @@ public class PortfolioServiceTest {
         assertEquals(result.getId(), portfolio.getId());
         assertEquals(result.getName(), portfolio.getName());
     }
+
+    @Test
+    void shouldFailToRetrievePortfolioWhenPortfolioNotExist() {
+        //Mock 
+        User testUser = new User(1L, "John", "Doe", LocalDate.parse("1999-09-24"), "Developer", null);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            portfolioservice.retrievePortfolio(999L, 1L);
+        });
+
+        assertEquals("The portfolio with the id 999 is not found.", exception.getMessage());
+    }
 }
