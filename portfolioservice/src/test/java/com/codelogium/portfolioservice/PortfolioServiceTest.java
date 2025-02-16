@@ -90,7 +90,6 @@ public class PortfolioServiceTest {
         Portfolio portfolio = new Portfolio(1L, "Tech Guru Investment", testUser, new ArrayList<>());
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
-        when(portfolioRepository.save(portfolio)).thenReturn(portfolio);
         when(portfolioRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of((portfolio)));
         
         // Act
