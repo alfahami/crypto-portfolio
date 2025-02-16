@@ -46,6 +46,7 @@ public class PortfolioServiceTest {
         .build();
 
         portfolioservice = new PortfolioServiceImp(portfolioRepository, userRepository, mockedWebClient);
+
     }
 
     @AfterEach
@@ -80,5 +81,23 @@ public class PortfolioServiceTest {
         });
 
         assertEquals("The user with the id 999 is not found.", exception.getMessage());
+    }
+
+    @Test
+    void shouldRetrievePortfolioSuccessfully() {
+        //Mock 
+        User testUser = new User(1L, "John", "Doe", LocalDate.parse("1999-09-24"), "Developer", null);
+        Portfolio portfolio = new Portfolio(1L, "Tech Guru Investment", testUser, new ArrayList<>());
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+        when(portfolioRepository.save(portfolio)).thenReturn(portfolio);
+        when(portfolioRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of((portfolio)));
+        
+        // Act
+        Portfolio result = portfolioservice.retrievePortfolio(1L, 1L);
+
+        //Assert
+        assertEquals(result.getId(), portfolio.getId());
+        assertEquals(result.getName(), portfolio.getName());
     }
 }
