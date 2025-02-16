@@ -71,4 +71,14 @@ public class PortfolioServiceTest {
         assertEquals("Tech Guru Investment", createdPortfolio.getName());
         verify(portfolioRepository, times(1)).save(any(Portfolio.class));   
     }
+
+    @Test
+    void shouldFailtToCreatePortfolioWhenUserNotFound() {
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            portfolioservice.createPortfolio(999L, new Portfolio());
+        });
+
+        assertEquals("The user with the id 999 is not found.", exception.getMessage());
+    }
 }
