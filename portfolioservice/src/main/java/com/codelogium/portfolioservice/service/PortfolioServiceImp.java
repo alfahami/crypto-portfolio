@@ -43,6 +43,7 @@ public class PortfolioServiceImp implements PortfolioService {
         return unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
     }
 
+    // Implement a partial update as portfolio can have multiple fields
     @Transactional // Commit changes correctly or rollback if failure
     @Override
     public Portfolio updatePortfolio(Long portfolioId, Long userId, Portfolio newPortfolio) {
