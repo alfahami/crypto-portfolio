@@ -56,6 +56,11 @@ public class PortfolioServiceTest {
     }
 
     @Test
+    void shouldGetValuationSuccessfully() {
+        
+    }
+
+    @Test
     void shouldCreatePortfolioSuccessfully() {
         // Mock
         User testUser = new User(1L, "John", "Doe", LocalDate.parse("1999-09-24"), "Developer", null);
@@ -63,7 +68,6 @@ public class PortfolioServiceTest {
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(portfolioRepository.save(portfolio)).thenReturn(portfolio);
-
         // Act
         Portfolio createdPortfolio = portfolioservice.createPortfolio(1L, portfolio);
 
@@ -111,5 +115,29 @@ public class PortfolioServiceTest {
         });
 
         assertEquals("The portfolio with the id 999 is not found.", exception.getMessage());
+    }
+
+    @Test
+    void shouldUpdatePortfolioSuccessfully() {
+        // Mock
+        User testUser = new User(1L, "John", "Doe", LocalDate.parse("1999-09-24"), "Developer", null);
+        Portfolio portfolio = new Portfolio(1L, "Tech Guru Investment", testUser, new ArrayList<>());
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+        when(portfolioRepository.save(portfolio)).thenReturn(portfolio);
+        when(portfolioRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of(portfolio));
+
+        Portfolio retrievedPortfolio = portfolioRepository.findByIdAndUserId(1L, 1L).get();
+
+        retrievedPortfolio.setName("Medium Tech Stock");
+        retrievedPortfolio.setId(999L); // tampering the ID in order to test if it gets ignored by the service
+        
+        when(portfolioRepository.save(any(Portfolio.class))).thenReturn(retrievedPortfolio);
+
+        // Act
+        Portfolio result = portfolioservice.updatePortfolio(1L, 1L, retrievedPortfolio);
+
+        // Assert
+        assertEquals("Medium Tech Stock", result.getName());
     }
 }
