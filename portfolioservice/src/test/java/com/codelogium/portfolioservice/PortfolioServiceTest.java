@@ -24,6 +24,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.codelogium.portfolioservice.entity.Holding;
 import com.codelogium.portfolioservice.entity.Portfolio;
 import com.codelogium.portfolioservice.entity.User;
+import com.codelogium.portfolioservice.exception.ResourceNotFoundException;
 import com.codelogium.portfolioservice.respositry.PortfolioRepository;
 import com.codelogium.portfolioservice.respositry.UserRepository;
 import com.codelogium.portfolioservice.service.PortfolioService;
@@ -95,6 +96,25 @@ public class PortfolioServiceTest {
 
         // Assert
         assertEquals(new BigDecimal("67390.1342"), result); 
+    }
+
+    @Test
+    void shouldFailToGetValuationWhenPortfolioHasNoHoldings() {
+        // Mock
+        User testUser = new User(1L, "John", "Doe", LocalDate.parse("1999-09-24"), "Developer", null);
+
+        Portfolio portfolio = new Portfolio(10L, "Tech Guru Investment", testUser, null);
+
+        when(userRepository.existsById(1L)).thenReturn(true);
+        when(portfolioRepository.findByIdAndUserId(10L, 1L)).thenReturn(Optional.of(portfolio));
+
+        //Act
+        Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
+            portfolioservice.valuation(1L, 10L, "MAD");
+        });
+
+        // Assert
+        assertEquals("Portfolio doesn't have holdings yet", exception.getMessage());
     }
 
     @Test
