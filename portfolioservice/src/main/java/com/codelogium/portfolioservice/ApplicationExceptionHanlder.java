@@ -19,6 +19,7 @@ import com.codelogium.portfolioservice.exception.ResourceNotFoundException;
 import reactor.core.publisher.Mono;
 
 import com.codelogium.portfolioservice.exception.ErrorResponse;
+import com.codelogium.portfolioservice.exception.ExchangeRateException;
 
 @RestControllerAdvice
 public class ApplicationExceptionHanlder extends ResponseEntityExceptionHandler {
@@ -28,6 +29,13 @@ public class ApplicationExceptionHanlder extends ResponseEntityExceptionHandler 
 
         ErrorResponse error = new ErrorResponse(Arrays.asList(ex.getMessage()));
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ExchangeRateException.class)
+    public ResponseEntity<Object> handleExchangeRateExceptions(ExchangeRateException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(Arrays.asList(ex.getMessage()));
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_GATEWAY);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
