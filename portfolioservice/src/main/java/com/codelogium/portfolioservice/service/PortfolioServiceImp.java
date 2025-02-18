@@ -98,27 +98,29 @@ public class PortfolioServiceImp implements PortfolioService {
     // Retrieves the current price of crypto using exchangerateservice local api
     public BigDecimal getCurrentPrice(String symbol, String base) {
         try {
-        JsonNode data = webClient.get().uri(uriBuilder -> uriBuilder.path("/exchange-rate")
-        .queryParam("symbol", symbol)
-        .queryParam("base", base)
-        .build())
-        .retrieve()
-        .onStatus(HttpStatusCode::isError, clientResponse -> Mono.error(new ExchangeRateException("Failed to fetch exchange rate")))
-        .bodyToMono(JsonNode.class)
-        .block(); // Bolocking for simplicity (avoid in reactive flows)
+            JsonNode data = webClient.get().uri(uriBuilder -> uriBuilder.path("/exchange-rate")
+                    .queryParam("symbol", symbol)
+                    .queryParam("base", base)
+                    .build())
+                    .retrieve()
+                    .onStatus(HttpStatusCode::isError,
+                            clientResponse -> Mono.error(new ExchangeRateException("Failed to fetch exchange rate")))
+                    .bodyToMono(JsonNode.class)
+                    .block(); // Bolocking for simplicity (avoid in reactive flows)
 
-        String price = data.get("price").toString();
-        
-        if(data == null || price == null) {
-            throw new ExchangeRateException("Invalid Exchange rate response");
-        }
+            String price = data.get("price").toString();
 
-        return new BigDecimal(price);
-        // WebClient-Specific Exceptions (API response errors)
-        } catch(WebClientResponseException ex) {
+            if (data == null || price == null) {
+                throw new ExchangeRateException("Invalid Exchange rate response");
+            }
+
+            return new BigDecimal(price);
+            // WebClient-Specific Exceptions (API response errors)
+        } catch (WebClientResponseException ex) {
             throw new ExchangeRateException("Exchange rate service error: " + ex.getMessage(), ex);
-        // Catch All Other Exceptions (e.g., NullPointerException, IllegalStateException)
-        } catch(Exception ex) {
+            // Catch All Other Exceptions (e.g., NullPointerException,
+            // IllegalStateException)
+        } catch (Exception ex) {
             throw new ExchangeRateException("Unexpected error fetching exchange rate", ex);
         }
     }
