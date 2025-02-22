@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,7 +31,7 @@ public class Holding {
     @NotBlank(message = "Symbol cannot be null or blank")
     private String symbol;
 
-    @NotBlank(message = "Amount cannot be null or blank")
+    @PositiveOrZero(message = "Amount must be greater or equal to zero")
     private BigDecimal amount;
 
     @ManyToOne
