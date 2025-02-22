@@ -46,8 +46,6 @@ public class PortfolioEndToEndTest {
 
     private User testUser;
     private Portfolio testPortfolio;
-    private Holding testHolding1;
-    private Holding testHolding2;
 
     private static MockWebServer mockWebServer;
 
@@ -67,9 +65,9 @@ public class PortfolioEndToEndTest {
         // Seed databases
         testPortfolio = portfolioService.createPortfolio(testUser.getId(), new Portfolio(null, "Tech Stock Investment", null, null));
 
-        testHolding1 = holdingService.createHolding(testPortfolio.getId(), testUser.getId(), new Holding(null, "BTC", BigDecimal.valueOf(213.45), null));
+        holdingService.createHolding(testPortfolio.getId(), testUser.getId(), new Holding(null, "BTC", BigDecimal.valueOf(213.45), null));
 
-        testHolding2 = holdingService.createHolding(testPortfolio.getId(), testUser.getId(), new Holding(null, "ETH", BigDecimal.valueOf(195.50), null));
+        holdingService.createHolding(testPortfolio.getId(), testUser.getId(), new Holding(null, "ETH", BigDecimal.valueOf(195.50), null));
         
     }
 
