@@ -102,7 +102,7 @@ public class PortfolioEndToEndTest {
 
     @Test
     void shouldGetPortfolioSuccessfully() throws Exception {
-        addPortfolioToUser(testUser.getId(), testPortfolio.getId());
+        addUserToPortfolio(testUser.getId(), testPortfolio.getId());
 
         RequestBuilder request = MockMvcRequestBuilders
             .get("/users/"+ testUser.getId() + "/portfolios/" + testPortfolio.getId());
@@ -115,7 +115,7 @@ public class PortfolioEndToEndTest {
     @Test
     void shouldUpdatePortfolioSuccessfully() throws Exception {
 
-        Portfolio portfolio = addPortfolioToUser(testUser.getId(), testPortfolio.getId());
+        Portfolio portfolio = addUserToPortfolio(testUser.getId(), testPortfolio.getId());
 
         portfolio.setId(3L); // intentionally tampering the id of the request body
         portfolio.setName("Crack Software Inc. Investment");
@@ -142,7 +142,7 @@ public class PortfolioEndToEndTest {
     @Test
     void shouldRemoveUserSuccessfully() throws Exception {
 
-        addPortfolioToUser(testUser.getId(), testPortfolio.getId());
+        addUserToPortfolio(testUser.getId(), testPortfolio.getId());
         
         RequestBuilder request = MockMvcRequestBuilders.delete("/users/" + testUser.getId() + "/portfolios/" + testPortfolio.getId());
 
@@ -151,7 +151,7 @@ public class PortfolioEndToEndTest {
 
     @Test
     void shouldCalculateValuation() throws Exception {
-        Portfolio portfolio = addPortfolioToUser(testUser.getId(), testPortfolio.getId());
+        Portfolio portfolio = addUserToPortfolio(testUser.getId(), testPortfolio.getId());
 
         addHoldingsToPortfolio(portfolio.getId(), testHolding1.getId());
         addHoldingsToPortfolio(portfolio.getId(), testHolding2.getId());
@@ -161,7 +161,18 @@ public class PortfolioEndToEndTest {
         mockMvc.perform(request).andExpect(status().isOk());
     }
 
-    private Portfolio addPortfolioToUser(Long userId, Long portfolioId) {
+    @Test
+    void shouldGetAllPortfolios() throws Exception {
+        addUserToPortfolio(testUser.getId(), testPortfolio.getId());
+        
+        RequestBuilder request = MockMvcRequestBuilders.get("/users/" + testUser.getId() + "/portfolios/all");
+
+        mockMvc.perform(request).andExpect(status().isOk())
+        .andExpect(jsonPath("$.size()").value(1))
+        .andExpect(jsonPath("$.[?(@.name == \"Tech Stock Investment\")]").exists());
+    }
+
+    private Portfolio addUserToPortfolio(Long userId, Long portfolioId) {
 
         User user = userRepository.findById(userId).orElseThrow();
         Portfolio portfolio = portfolioRepository.findById(portfolioId).orElseThrow();
