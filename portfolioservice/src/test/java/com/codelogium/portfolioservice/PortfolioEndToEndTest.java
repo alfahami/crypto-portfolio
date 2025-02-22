@@ -149,18 +149,31 @@ public class PortfolioEndToEndTest {
         mockMvc.perform(request).andExpect(status().isNoContent());
     }
 
+    @Test
+    void shouldCalculateValuation() throws Exception {
+        Portfolio portfolio = addPortfolioToUser(testUser.getId(), testPortfolio.getId());
+
+        addHoldingsToPortfolio(portfolio.getId(), testHolding1.getId());
+        addHoldingsToPortfolio(portfolio.getId(), testHolding2.getId());
+
+        RequestBuilder request = MockMvcRequestBuilders.get("/users/" + testUser.getId() + "/portfolios/" + testPortfolio.getId() + "/valuation").queryParam("base", "EUR");
+
+        mockMvc.perform(request).andExpect(status().isOk());
+    }
+
     private Portfolio addPortfolioToUser(Long userId, Long portfolioId) {
 
         User user = userRepository.findById(userId).get();
         Portfolio portfolio = portfolioRepository.findById(portfolioId).get();
         portfolio.setUser(user);
-        return portfolioRepository.save(portfolio);
-        
+        return portfolioRepository.save(portfolio); 
     }
 
+    private Portfolio addHoldingsToPortfolio(Long portfolioId, Long holdingId) {
+        Portfolio portfolio = portfolioRepository.findById(portfolioId).orElseThrow();
+        Holding holding = holdingRepository.findById(holdingId).orElseThrow();
 
-
-
-
-
+        portfolio.setHoldings(List.of(holding));
+        return portfolioRepository.save(portfolio);
+    }
 }
