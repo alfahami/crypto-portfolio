@@ -163,8 +163,8 @@ public class PortfolioEndToEndTest {
 
     private Portfolio addPortfolioToUser(Long userId, Long portfolioId) {
 
-        User user = userRepository.findById(userId).get();
-        Portfolio portfolio = portfolioRepository.findById(portfolioId).get();
+        User user = userRepository.findById(userId).orElseThrow();
+        Portfolio portfolio = portfolioRepository.findById(portfolioId).orElseThrow();
         portfolio.setUser(user);
         return portfolioRepository.save(portfolio); 
     }
