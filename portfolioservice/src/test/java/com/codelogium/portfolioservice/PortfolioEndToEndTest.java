@@ -1,5 +1,6 @@
 package com.codelogium.portfolioservice;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import org.junit.jupiter.api.AfterEach;
@@ -8,12 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
 import com.codelogium.portfolioservice.entity.Holding;
 import com.codelogium.portfolioservice.entity.Portfolio;
 import com.codelogium.portfolioservice.entity.User;
@@ -22,26 +25,27 @@ import com.codelogium.portfolioservice.service.PortfolioService;
 import com.codelogium.portfolioservice.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@SpringBootTest
 @AutoConfigureMockMvc
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class PortfolioEndToEndTest {
     
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
+    private UserService userService;
+    
+    @Autowired
     private PortfolioService portfolioService;
 
     @Autowired
     private HoldingService holdingService;
-
-    @Autowired
-    private UserService userService;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -50,16 +54,25 @@ public class PortfolioEndToEndTest {
 
     private static MockWebServer mockWebServer;
 
+    /*
+     *  @DynamicPropertySource method runs
+     *  MockWebServer starts
+     *  URL gets registered as a property
+     *  Spring context initializes using the registered properties
+     */
+    @DynamicPropertySource
+    static void registerProperties(DynamicPropertyRegistry registry) {
+        mockWebServer = new MockWebServer();
+        try {
+            mockWebServer.start(9090);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to start MockWebServer", e);
+        }
+        registry.add("exchangerate.base.url", () -> mockWebServer.url("/").toString());
+    }
 
     @BeforeEach
     void setUp() throws Exception {
-        tearDown();
-
-        mockWebServer.start(9090);
-        // Inject MockWebServer URL into the service
-        String baseUrl = mockWebServer.url("/").toString();
-        System.setProperty("exchangerate.base.url", baseUrl);
-
         
         testUser = userService.createUser(new User(null, "Driss", "Boumlik", LocalDate.parse("1999-12-01"), "Porgrammer", null));
 
@@ -143,9 +156,24 @@ public class PortfolioEndToEndTest {
 
     @Test
     void shouldCalculateValuation() throws Exception {
+        // Mock exchange rate API for BTC
+        mockWebServer.enqueue(
+            new MockResponse().setResponseCode(HttpStatus.OK.value())
+            .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .setBody("{\"price\": 9850.543}"));
+
+        // Mock exchange rate API for ETH
+        mockWebServer.enqueue(
+            new MockResponse().setResponseCode(HttpStatus.OK.value())
+            .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .setBody("{\"price\": 7543.987}")
+        );
+
         RequestBuilder request = MockMvcRequestBuilders.get("/users/" + testUser.getId() + "/portfolios/" + testPortfolio.getId() + "/valuation").queryParam("base", "EUR");
 
-        mockMvc.perform(request).andExpect(status().isOk());
+        mockMvc.perform(request).andExpect(status().isOk())
+        .andExpect(content().string("3577447.86185"));
+        
     }
 
     @Test
