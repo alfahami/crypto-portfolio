@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -78,7 +79,6 @@ public class PortfolioEndToEndTest {
 
     @Test
     public void shouldPostPortfolioSuccessfully() throws Exception {
-
         String data = objectMapper.writeValueAsString(
             new Portfolio(null, "CodeLogium Investment", testUser, null));
 
@@ -94,7 +94,6 @@ public class PortfolioEndToEndTest {
 
     @Test
     void shouldFailWhenCreatingPortfolio() throws Exception {
-
         String data = objectMapper.writeValueAsString(new Portfolio(null, "   ", testUser, null));
 
         RequestBuilder request = MockMvcRequestBuilders.post("/users/"+ testUser.getId() + " /portfolios").contentType(MediaType.APPLICATION_JSON_VALUE).content(data);
@@ -104,7 +103,6 @@ public class PortfolioEndToEndTest {
 
     @Test
     void shouldGetPortfolioSuccessfully() throws Exception {
-
         RequestBuilder request = MockMvcRequestBuilders
             .get("/users/"+ testUser.getId() + "/portfolios/" + testPortfolio.getId());
 
@@ -115,7 +113,6 @@ public class PortfolioEndToEndTest {
 
     @Test
     void shouldUpdatePortfolioSuccessfully() throws Exception {
-
         testPortfolio.setName("Crack Software Inc. Investment");
         String requestData = objectMapper.writeValueAsString(testPortfolio);
 
@@ -139,7 +136,6 @@ public class PortfolioEndToEndTest {
 
     @Test
     void shouldRemoveUserSuccessfully() throws Exception {
-        
         RequestBuilder request = MockMvcRequestBuilders.delete("/users/" + testUser.getId() + "/portfolios/" + testPortfolio.getId());
 
         mockMvc.perform(request).andExpect(status().isNoContent());
@@ -147,7 +143,6 @@ public class PortfolioEndToEndTest {
 
     @Test
     void shouldCalculateValuation() throws Exception {
-
         RequestBuilder request = MockMvcRequestBuilders.get("/users/" + testUser.getId() + "/portfolios/" + testPortfolio.getId() + "/valuation").queryParam("base", "EUR");
 
         mockMvc.perform(request).andExpect(status().isOk());
@@ -155,12 +150,10 @@ public class PortfolioEndToEndTest {
 
     @Test
     void shouldGetAllPortfolios() throws Exception {
-        
         RequestBuilder request = MockMvcRequestBuilders.get("/users/" + testUser.getId() + "/portfolios/all");
 
         mockMvc.perform(request).andExpect(status().isOk())
         .andExpect(jsonPath("$.size()").value(1))
         .andExpect(jsonPath("$.[?(@.name == \"Tech Stock Investment\")]").exists());
     }
-
 }
