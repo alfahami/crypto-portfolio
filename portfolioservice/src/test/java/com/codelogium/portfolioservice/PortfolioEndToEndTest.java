@@ -45,90 +45,91 @@ public class PortfolioEndToEndTest {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final User USER_1 = new User(null, "ELogie", "Assomptions", LocalDate.parse("1993-09-23"), "Music Producer", null);
-    private static final User USER_2 = new User(null, "Dakoine", "Toihir", LocalDate.parse("1995-10-25"), "Physist", null);
-    private static final User USER_3 = new User(null, "Driss", "Boumlik", LocalDate.parse("1999-12-01"), "Porgrammer", null);
+    private User testUser;
+    private Portfolio testPortfolio;
+    private Holding testHolding1;
+    private Holding testHolding2;
 
-    private static final Portfolio PORTFOLIO_1 = new Portfolio(null, "Tech Stock Investment", null, null);
-    private static final Portfolio PORTFOLIO_2 = new Portfolio(null, "Piriform Assets", null, null);
-    private static final Portfolio PORTFOLIO_3 = new Portfolio(null, "Lodrige Caretaker Group", null, null);
-
-    private final static Holding HOLDING_1 = new Holding(null, "BTC", BigDecimal.valueOf(213.45), null);
-    private final static Holding HOLDING_2 = new Holding(null, "ETH", BigDecimal.valueOf(195.50), null);
-    private final static Holding HOLDING_3 = new Holding(null, "ALL", BigDecimal.valueOf(515.60), null);
 
     @BeforeEach
     void setUp() {
-        userRepository.saveAll(List.of(USER_1, USER_2, USER_3));
-        portfolioRepository.saveAll(List.of(PORTFOLIO_1, PORTFOLIO_2, PORTFOLIO_3));
-        holdingRepository.saveAll(List.of(HOLDING_1, HOLDING_2, HOLDING_3));
+
+        cleanupDatabases();
+        
+        testUser =userRepository.save(new User(null, "Driss", "Boumlik", LocalDate.parse("1999-12-01"), "Porgrammer", null));
+
+        testPortfolio = portfolioRepository.save(new Portfolio(null, "Tech Stock Investment", null, null));
+
+        testHolding1 = holdingRepository.save(new Holding(null, "BTC", BigDecimal.valueOf(213.45), null));
+
+        testHolding2 = holdingRepository.save(new Holding(null, "ETH", BigDecimal.valueOf(195.50), null));
         
     }
 
     @AfterEach
-    void clearDatabases() {
+    void cleanupDatabases() {
         userRepository.deleteAll();
         portfolioRepository.deleteAll();
     }
 
     @Test
     public void shouldPostPortfolioSuccessfully() throws Exception {
-        User user = userRepository.findById(1L).get();
+        User user = userRepository.findById(testUser.getId()).get();
 
-        String data = objectMapper.writeValueAsString(new Portfolio(null, "CodeLogium Investment", user, new ArrayList<>()));
+        String data = objectMapper.writeValueAsString(
+            new Portfolio(null, "CodeLogium Investment", user, new ArrayList<>()));
 
-        RequestBuilder request = MockMvcRequestBuilders.post("/users/1/portfolios").contentType(MediaType.APPLICATION_JSON_VALUE).content(data);
+        RequestBuilder request = MockMvcRequestBuilders
+                .post("/users/" + testUser.getId() + "/portfolios")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(data);
 
-        mockMvc.perform(request).andExpect(status().isCreated())
+        mockMvc.perform(request)
+        .andExpect(status().isCreated())
         .andExpect(jsonPath("$.name").value("CodeLogium Investment"));
     }
 
     @Test
     void shouldFailWhenCreatingPortfolio() throws Exception {
-        User user = userRepository.findById(1L).get();
+        User user = userRepository.findById(testUser.getId()).get();
 
         String data = objectMapper.writeValueAsString(new Portfolio(null, "   ", user, null));
 
-        RequestBuilder request = MockMvcRequestBuilders.post("/users/1/portfolios").contentType(MediaType.APPLICATION_JSON_VALUE).content(data);
+        RequestBuilder request = MockMvcRequestBuilders.post("/users/"+ testUser.getId() + " /portfolios").contentType(MediaType.APPLICATION_JSON_VALUE).content(data);
 
         mockMvc.perform(request).andExpect(status().isBadRequest());
     }
 
     @Test
     void shouldGetPortfolioSuccessfully() throws Exception {
-        User user = userRepository.findById(1L).get();
-        Portfolio portfolio = portfolioRepository.findById(2L).get();
-        portfolio.setUser(user);
-        portfolioRepository.save(portfolio);
+        addPortfolioToUser(testUser.getId(), testPortfolio.getId());
 
-        RequestBuilder request = MockMvcRequestBuilders.get("/users/1/portfolios/2");
+        RequestBuilder request = MockMvcRequestBuilders
+            .get("/users/"+ testUser.getId() + "/portfolios/" + testPortfolio.getId());
 
         mockMvc.perform(request).andExpect(status().isOk())
-        .andExpect(jsonPath("$.name").value("Piriform Assets"))
-        .andExpect(jsonPath("$.id").value(2L));
+        .andExpect(jsonPath("$.name").value("Tech Stock Investment"))
+        .andExpect(jsonPath("$.id").value(testPortfolio.getId()));
     }
 
     @Test
     void shouldUpdatePortfolioSuccessfully() throws Exception {
 
-        User user = userRepository.findById(1L).get();
-        Portfolio portfolio = portfolioRepository.findById(2L).get();
-        portfolio.setUser(user);
-        portfolioRepository.save(portfolio);
+        Portfolio portfolio = addPortfolioToUser(testUser.getId(), testPortfolio.getId());
 
         portfolio.setId(3L); // intentionally tampering the id of the request body
-        portfolio.setName("Tech Test Live Stock Assets");
+        portfolio.setName("Crack Software Inc. Investment");
         String requestData = objectMapper.writeValueAsString(portfolio);
 
         RequestBuilder request = MockMvcRequestBuilders
-                                .patch("/users/1/portfolios/2")
+                                .patch("/users/" + testUser.getId() +"/portfolios/" + testPortfolio.getId())
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(requestData);
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(2L))
-                .andExpect(jsonPath("$.name").value("Tech Test Live Stock Assets"));
+                .andExpect(jsonPath("$.id").value(testPortfolio.getId()))
+                .andExpect(jsonPath("$.name").value("Crack Software Inc. Investment"));
     }
 
     @Test
@@ -140,13 +141,21 @@ public class PortfolioEndToEndTest {
 
     @Test
     void shouldRemoveUserSuccessfully() throws Exception {
-        User user = userRepository.findById(1L).get();
-        Portfolio portfolio = portfolioRepository.findById(2L).get();
-        portfolio.setUser(user);
-        portfolioRepository.save(portfolio);
-        RequestBuilder request = MockMvcRequestBuilders.delete("/users/1/portfolios/2");
+
+        addPortfolioToUser(testUser.getId(), testPortfolio.getId());
+        
+        RequestBuilder request = MockMvcRequestBuilders.delete("/users/" + testUser.getId() + "/portfolios/" + testPortfolio.getId());
 
         mockMvc.perform(request).andExpect(status().isNoContent());
+    }
+
+    private Portfolio addPortfolioToUser(Long userId, Long portfolioId) {
+
+        User user = userRepository.findById(userId).get();
+        Portfolio portfolio = portfolioRepository.findById(portfolioId).get();
+        portfolio.setUser(user);
+        return portfolioRepository.save(portfolio);
+        
     }
 
 
