@@ -38,7 +38,7 @@ public class PortfolioServiceTest {
 
     // Initialze Mock web server
     private static MockWebServer mockWebServer;
-    private PortfolioService portfolioservice;
+    private PortfolioService portfolioService;
 
     @Mock
     private UserRepository userRepository;
@@ -54,7 +54,7 @@ public class PortfolioServiceTest {
         WebClient mockedWebClient = WebClient.builder().baseUrl(mockWebServer.url("/").toString())
                 .build();
 
-        portfolioservice = new PortfolioServiceImp(portfolioRepository, userRepository, mockedWebClient);
+        portfolioService = new PortfolioServiceImp(portfolioRepository, userRepository, mockedWebClient);
 
     }
 
@@ -92,7 +92,7 @@ public class PortfolioServiceTest {
             .setBody("{\"price\": 895.35}"));
 
         // AcT
-        BigDecimal result = portfolioservice.valuation(1L, 10L, "EUR");
+        BigDecimal result = portfolioService.valuation(1L, 10L, "EUR");
 
         // Assert
         assertEquals(new BigDecimal("67390.1342"), result); 
@@ -110,7 +110,7 @@ public class PortfolioServiceTest {
 
         //Act
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
-            portfolioservice.valuation(1L, 10L, "MAD");
+            portfolioService.valuation(1L, 10L, "MAD");
         });
 
         // Assert
@@ -126,7 +126,7 @@ public class PortfolioServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(portfolioRepository.save(portfolio)).thenReturn(portfolio);
         // Act
-        Portfolio createdPortfolio = portfolioservice.createPortfolio(1L, portfolio);
+        Portfolio createdPortfolio = portfolioService.createPortfolio(1L, portfolio);
 
         // Assert
         assertNotNull(createdPortfolio);
@@ -138,7 +138,7 @@ public class PortfolioServiceTest {
     void shouldFailtToCreatePortfolioWhenUserNotFound() {
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            portfolioservice.createPortfolio(999L, new Portfolio());
+            portfolioService.createPortfolio(999L, new Portfolio());
         });
 
         assertEquals("The user with the id 999 is not found.", exception.getMessage());
@@ -154,7 +154,7 @@ public class PortfolioServiceTest {
         when(portfolioRepository.findByIdAndUserId(1L, 1L)).thenReturn(Optional.of((portfolio)));
 
         // Act
-        Portfolio result = portfolioservice.retrievePortfolio(1L, 1L);
+        Portfolio result = portfolioService.retrievePortfolio(1L, 1L);
 
         // Assert
         assertEquals(result.getId(), portfolio.getId());
@@ -168,7 +168,7 @@ public class PortfolioServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            portfolioservice.retrievePortfolio(999L, 1L);
+            portfolioService.retrievePortfolio(999L, 1L);
         });
 
         assertEquals("The portfolio with the id 999 is not found.", exception.getMessage());
@@ -192,7 +192,7 @@ public class PortfolioServiceTest {
         when(portfolioRepository.save(any(Portfolio.class))).thenReturn(retrievedPortfolio);
 
         // Act
-        Portfolio result = portfolioservice.updatePortfolio(1L, 1L, retrievedPortfolio);
+        Portfolio result = portfolioService.updatePortfolio(1L, 1L, retrievedPortfolio);
 
         // Assert
         assertEquals("Medium Tech Stock", result.getName());
