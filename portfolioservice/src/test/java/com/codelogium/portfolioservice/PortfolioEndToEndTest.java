@@ -67,7 +67,8 @@ public class PortfolioEndToEndTest {
 
         RequestBuilder request = MockMvcRequestBuilders.post("/users/1/portfolios").contentType(MediaType.APPLICATION_JSON_VALUE).content(data);
 
-        mockMvc.perform(request).andExpect(status().isCreated());
+        mockMvc.perform(request).andExpect(status().isCreated())
+        .andExpect(jsonPath("$.name").value("CodeLogium Investment"));
     }
 
     @Test
@@ -79,7 +80,9 @@ public class PortfolioEndToEndTest {
 
         RequestBuilder request = MockMvcRequestBuilders.get("/users/1/portfolios/2");
 
-        mockMvc.perform(request).andExpect(status().is2xxSuccessful());
+        mockMvc.perform(request).andExpect(status().isOk())
+        .andExpect(jsonPath("$.name").value("Piriform Assets"))
+        .andExpect(jsonPath("$.id").value(2L));
 
 
     }
