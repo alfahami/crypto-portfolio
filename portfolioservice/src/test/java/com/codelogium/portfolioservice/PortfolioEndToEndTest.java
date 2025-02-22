@@ -108,6 +108,36 @@ public class PortfolioEndToEndTest {
         .andExpect(jsonPath("$.id").value(2L));
     }
 
+    @Test
+    void shouldUpdatePortfolioSuccessfully() throws Exception {
+
+        User user = userRepository.findById(1L).get();
+        Portfolio portfolio = portfolioRepository.findById(2L).get();
+        portfolio.setUser(user);
+        portfolioRepository.save(portfolio);
+
+        portfolio.setId(3L); // intentionally tampering the id of the request body
+        portfolio.setName("Tech Test Live Stock Assets");
+        String requestData = objectMapper.writeValueAsString(portfolio);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                                .patch("/users/1/portfolios/2")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(requestData);
+
+        mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(2L))
+                .andExpect(jsonPath("$.name").value("Tech Test Live Stock Assets"));
+    }
+
+    @Test
+    void shouldFailWhenRetrievingPortfolio() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders.get("/users/portfolios/99");
+
+        mockMvc.perform(request).andExpect(status().isNotFound());
+    }
+
 
 
 
