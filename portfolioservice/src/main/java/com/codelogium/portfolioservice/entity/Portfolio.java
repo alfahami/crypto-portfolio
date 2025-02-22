@@ -40,7 +40,7 @@ public class Portfolio {
     private User user; //each portfolio -> One User
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Holding> holdings = new ArrayList<>(); // Prevents orphanRemoval errors
 
 }

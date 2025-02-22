@@ -138,6 +138,17 @@ public class PortfolioEndToEndTest {
         mockMvc.perform(request).andExpect(status().isNotFound());
     }
 
+    @Test
+    void shouldRemoveUserSuccessfully() throws Exception {
+        User user = userRepository.findById(1L).get();
+        Portfolio portfolio = portfolioRepository.findById(2L).get();
+        portfolio.setUser(user);
+        portfolioRepository.save(portfolio);
+        RequestBuilder request = MockMvcRequestBuilders.delete("/users/1/portfolios/2");
+
+        mockMvc.perform(request).andExpect(status().isNoContent());
+    }
+
 
 
 
