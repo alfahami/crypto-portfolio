@@ -21,6 +21,8 @@ import com.codelogium.portfolioservice.service.PortfolioService;
 import com.codelogium.portfolioservice.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import okhttp3.mockwebserver.MockWebServer;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -47,14 +49,22 @@ public class PortfolioEndToEndTest {
     private Holding testHolding1;
     private Holding testHolding2;
 
+    private static MockWebServer mockWebServer;
+
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
+        tearDown();
 
-        cleanupDatabases();
+        mockWebServer.start(9090);
+        // Inject MockWebServer URL into the service
+        String baseUrl = mockWebServer.url("/").toString();
+        System.setProperty("exchangerate.base.url", baseUrl);
+
         
         testUser = userService.createUser(new User(null, "Driss", "Boumlik", LocalDate.parse("1999-12-01"), "Porgrammer", null));
 
+        // Seed databases
         testPortfolio = portfolioService.createPortfolio(testUser.getId(), new Portfolio(null, "Tech Stock Investment", null, null));
 
         testHolding1 = holdingService.createHolding(testPortfolio.getId(), testUser.getId(), new Holding(null, "BTC", BigDecimal.valueOf(213.45), null));
@@ -64,8 +74,8 @@ public class PortfolioEndToEndTest {
     }
 
     @AfterEach
-    void cleanupDatabases() {
-        
+    void tearDown() throws Exception {
+        mockWebServer.shutdown();
     }
 
     @Test
