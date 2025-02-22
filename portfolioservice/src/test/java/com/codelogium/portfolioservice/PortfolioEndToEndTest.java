@@ -2,9 +2,6 @@ package com.codelogium.portfolioservice;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,9 +16,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.codelogium.portfolioservice.entity.Holding;
 import com.codelogium.portfolioservice.entity.Portfolio;
 import com.codelogium.portfolioservice.entity.User;
-import com.codelogium.portfolioservice.respositry.HoldingRepository;
-import com.codelogium.portfolioservice.respositry.PortfolioRepository;
-import com.codelogium.portfolioservice.respositry.UserRepository;
+import com.codelogium.portfolioservice.service.HoldingService;
+import com.codelogium.portfolioservice.service.PortfolioService;
+import com.codelogium.portfolioservice.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,13 +32,13 @@ public class PortfolioEndToEndTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private UserRepository userRepository;
+    private PortfolioService portfolioService;
 
     @Autowired
-    private PortfolioRepository portfolioRepository;
+    private HoldingService holdingService;
 
     @Autowired
-    private HoldingRepository holdingRepository;
+    private UserService userService;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -56,28 +53,26 @@ public class PortfolioEndToEndTest {
 
         cleanupDatabases();
         
-        testUser =userRepository.save(new User(null, "Driss", "Boumlik", LocalDate.parse("1999-12-01"), "Porgrammer", null));
+        testUser = userService.createUser(new User(null, "Driss", "Boumlik", LocalDate.parse("1999-12-01"), "Porgrammer", null));
 
-        testPortfolio = portfolioRepository.save(new Portfolio(null, "Tech Stock Investment", null, null));
+        testPortfolio = portfolioService.createPortfolio(testUser.getId(), new Portfolio(null, "Tech Stock Investment", null, null));
 
-        testHolding1 = holdingRepository.save(new Holding(null, "BTC", BigDecimal.valueOf(213.45), null));
+        testHolding1 = holdingService.createHolding(testPortfolio.getId(), testUser.getId(), new Holding(null, "BTC", BigDecimal.valueOf(213.45), null));
 
-        testHolding2 = holdingRepository.save(new Holding(null, "ETH", BigDecimal.valueOf(195.50), null));
+        testHolding2 = holdingService.createHolding(testPortfolio.getId(), testUser.getId(), new Holding(null, "ETH", BigDecimal.valueOf(195.50), null));
         
     }
 
     @AfterEach
     void cleanupDatabases() {
-        userRepository.deleteAll();
-        portfolioRepository.deleteAll();
+        
     }
 
     @Test
     public void shouldPostPortfolioSuccessfully() throws Exception {
-        User user = userRepository.findById(testUser.getId()).get();
 
         String data = objectMapper.writeValueAsString(
-            new Portfolio(null, "CodeLogium Investment", user, new ArrayList<>()));
+            new Portfolio(null, "CodeLogium Investment", testUser, null));
 
         RequestBuilder request = MockMvcRequestBuilders
                 .post("/users/" + testUser.getId() + "/portfolios")
@@ -91,9 +86,8 @@ public class PortfolioEndToEndTest {
 
     @Test
     void shouldFailWhenCreatingPortfolio() throws Exception {
-        User user = userRepository.findById(testUser.getId()).get();
 
-        String data = objectMapper.writeValueAsString(new Portfolio(null, "   ", user, null));
+        String data = objectMapper.writeValueAsString(new Portfolio(null, "   ", testUser, null));
 
         RequestBuilder request = MockMvcRequestBuilders.post("/users/"+ testUser.getId() + " /portfolios").contentType(MediaType.APPLICATION_JSON_VALUE).content(data);
 
@@ -102,7 +96,6 @@ public class PortfolioEndToEndTest {
 
     @Test
     void shouldGetPortfolioSuccessfully() throws Exception {
-        addUserToPortfolio(testUser.getId(), testPortfolio.getId());
 
         RequestBuilder request = MockMvcRequestBuilders
             .get("/users/"+ testUser.getId() + "/portfolios/" + testPortfolio.getId());
@@ -115,11 +108,8 @@ public class PortfolioEndToEndTest {
     @Test
     void shouldUpdatePortfolioSuccessfully() throws Exception {
 
-        Portfolio portfolio = addUserToPortfolio(testUser.getId(), testPortfolio.getId());
-
-        portfolio.setId(3L); // intentionally tampering the id of the request body
-        portfolio.setName("Crack Software Inc. Investment");
-        String requestData = objectMapper.writeValueAsString(portfolio);
+        testPortfolio.setName("Crack Software Inc. Investment");
+        String requestData = objectMapper.writeValueAsString(testPortfolio);
 
         RequestBuilder request = MockMvcRequestBuilders
                                 .patch("/users/" + testUser.getId() +"/portfolios/" + testPortfolio.getId())
@@ -141,8 +131,6 @@ public class PortfolioEndToEndTest {
 
     @Test
     void shouldRemoveUserSuccessfully() throws Exception {
-
-        addUserToPortfolio(testUser.getId(), testPortfolio.getId());
         
         RequestBuilder request = MockMvcRequestBuilders.delete("/users/" + testUser.getId() + "/portfolios/" + testPortfolio.getId());
 
@@ -151,10 +139,6 @@ public class PortfolioEndToEndTest {
 
     @Test
     void shouldCalculateValuation() throws Exception {
-        Portfolio portfolio = addUserToPortfolio(testUser.getId(), testPortfolio.getId());
-
-        addHoldingsToPortfolio(portfolio.getId(), testHolding1.getId());
-        addHoldingsToPortfolio(portfolio.getId(), testHolding2.getId());
 
         RequestBuilder request = MockMvcRequestBuilders.get("/users/" + testUser.getId() + "/portfolios/" + testPortfolio.getId() + "/valuation").queryParam("base", "EUR");
 
@@ -163,7 +147,6 @@ public class PortfolioEndToEndTest {
 
     @Test
     void shouldGetAllPortfolios() throws Exception {
-        addUserToPortfolio(testUser.getId(), testPortfolio.getId());
         
         RequestBuilder request = MockMvcRequestBuilders.get("/users/" + testUser.getId() + "/portfolios/all");
 
@@ -172,19 +155,4 @@ public class PortfolioEndToEndTest {
         .andExpect(jsonPath("$.[?(@.name == \"Tech Stock Investment\")]").exists());
     }
 
-    private Portfolio addUserToPortfolio(Long userId, Long portfolioId) {
-
-        User user = userRepository.findById(userId).orElseThrow();
-        Portfolio portfolio = portfolioRepository.findById(portfolioId).orElseThrow();
-        portfolio.setUser(user);
-        return portfolioRepository.save(portfolio); 
-    }
-
-    private Portfolio addHoldingsToPortfolio(Long portfolioId, Long holdingId) {
-        Portfolio portfolio = portfolioRepository.findById(portfolioId).orElseThrow();
-        Holding holding = holdingRepository.findById(holdingId).orElseThrow();
-
-        portfolio.setHoldings(List.of(holding));
-        return portfolioRepository.save(portfolio);
-    }
 }
