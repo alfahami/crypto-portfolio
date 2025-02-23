@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import com.codelogium.portfolioservice.entity.Holding;
 import com.codelogium.portfolioservice.entity.Portfolio;
 import com.codelogium.portfolioservice.exception.ResourceNotFoundException;
-import com.codelogium.portfolioservice.respositry.HoldingRepository;
-import com.codelogium.portfolioservice.respositry.PortfolioRepository;
+import com.codelogium.portfolioservice.respository.HoldingRepository;
+import com.codelogium.portfolioservice.respository.PortfolioRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.codelogium.portfolioservice.respositry;
+package com.codelogium.portfolioservice.respository;
 
 import java.util.List;
 import java.util.Optional;

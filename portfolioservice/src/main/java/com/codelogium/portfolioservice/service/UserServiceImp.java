@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.codelogium.portfolioservice.entity.User;
 import com.codelogium.portfolioservice.exception.ResourceNotFoundException;
-import com.codelogium.portfolioservice.respositry.UserRepository;
+import com.codelogium.portfolioservice.respository.UserRepository;
 
 import jakarta.transaction.Transactional;
 

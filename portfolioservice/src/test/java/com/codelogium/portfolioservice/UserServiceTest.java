@@ -16,7 +16,7 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.codelogium.portfolioservice.entity.User;
-import com.codelogium.portfolioservice.respositry.UserRepository;
+import com.codelogium.portfolioservice.respository.UserRepository;
 import com.codelogium.portfolioservice.service.UserService;
 import com.codelogium.portfolioservice.service.UserServiceImp;
 

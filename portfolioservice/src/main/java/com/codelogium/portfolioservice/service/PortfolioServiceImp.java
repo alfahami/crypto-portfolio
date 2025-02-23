@@ -17,8 +17,8 @@ import com.codelogium.portfolioservice.entity.Portfolio;
 import com.codelogium.portfolioservice.entity.User;
 import com.codelogium.portfolioservice.exception.ExchangeRateException;
 import com.codelogium.portfolioservice.exception.ResourceNotFoundException;
-import com.codelogium.portfolioservice.respositry.PortfolioRepository;
-import com.codelogium.portfolioservice.respositry.UserRepository;
+import com.codelogium.portfolioservice.respository.PortfolioRepository;
+import com.codelogium.portfolioservice.respository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import lombok.AllArgsConstructor;
