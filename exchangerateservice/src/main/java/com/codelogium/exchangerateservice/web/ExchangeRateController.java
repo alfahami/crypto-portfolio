@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
 @AllArgsConstructor
 @RequestMapping(value = "/exchange-rate", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ExchangeRateController {
-    
+
     private ExchangeRateService exchangeRateService;
 
     @GetMapping("/latest")
@@ -28,12 +28,12 @@ public class ExchangeRateController {
         return exchangeRateService.getAllData();
     }
 
-    // Request Params validation could be handled usign a record java class inside dto
+    // Request Params validation could be handled usign a record java class inside
+    // dto
     @GetMapping
     public Mono<CryptoResponseMapper> retrievePrice(
-        @RequestParam @NotBlank(message = "Symbol cannot be null or blank") String symbol,
-        @RequestParam @NotBlank(message = "Base cannot be null or blank") String base
-    ) {
+            @RequestParam @NotBlank(message = "Symbol cannot be null or blank") String symbol,
+            @RequestParam @NotBlank(message = "Base cannot be null or blank") String base) {
         return exchangeRateService.retrivePrice(symbol.toUpperCase(), base.toUpperCase());
-    }  
+    }
 }

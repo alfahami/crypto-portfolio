@@ -8,5 +8,6 @@ import reactor.core.publisher.Mono;
 
 public interface ExchangeRateService {
     Mono<CryptoResponseMapper> retrivePrice(String symbol, String base);
+
     Mono<ResponseEntity<String>> getAllData();
 }

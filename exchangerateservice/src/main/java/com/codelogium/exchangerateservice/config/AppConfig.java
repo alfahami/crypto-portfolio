@@ -12,17 +12,17 @@ public class AppConfig {
 
     @Value("${external-api.base-url}")
     private String baseUrl;
-    
+
     @Value("${external-api.key}")
     private String apiKey;
-   
+
     // Defines a bean to create ad configure a WebClient instance
     @Bean
     public WebClient webClient(WebClient.Builder builder) {
         return builder
-                    .baseUrl(baseUrl)
-                    .defaultHeader("X-CMC_PRO_API_KEY", apiKey)
-                    .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .build();
-    }    
+                .baseUrl(baseUrl)
+                .defaultHeader("X-CMC_PRO_API_KEY", apiKey)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
+    }
 }

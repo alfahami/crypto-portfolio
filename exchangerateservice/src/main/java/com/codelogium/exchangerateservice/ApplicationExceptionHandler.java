@@ -36,7 +36,8 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
     public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex) {
         List<String> errorMessages = new ArrayList<>();
 
-        errorMessages.addAll(ex.getConstraintViolations().stream().map(violation -> violation.getMessage()).collect(Collectors.toList()));
+        errorMessages.addAll(ex.getConstraintViolations().stream().map(violation -> violation.getMessage())
+                .collect(Collectors.toList()));
 
         ErrorResponse errorResponse = new ErrorResponse(errorMessages);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);

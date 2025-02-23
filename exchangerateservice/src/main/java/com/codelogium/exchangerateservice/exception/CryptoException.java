@@ -27,7 +27,7 @@ public class CryptoException extends RuntimeException {
                     // Extract error details dynamically
                     JsonNode statusNode = errorBody.path("status");
                     String errorMessage = statusNode.path("error_message").asText();
-                    //Check if invalid base
+                    // Check if invalid base
                     if (errorMessage.toLowerCase().contains("convert")) {
                         return Mono.error(new CryptoException(
                                 clientResponse.statusCode(),

@@ -38,7 +38,8 @@ public class ExchangeRateServiceTest {
     mockWebServer = new MockWebServer();
     mockWebServer.start(9090);
 
-    // Create a WebClient that simulates the actual WebClient in exchangerate service.
+    // Create a WebClient that simulates the actual WebClient in exchangerate
+    // service.
     WebClient mockedWebClient = WebClient.builder()
         .baseUrl(mockWebServer.url("/").toString())
         .build();
@@ -70,7 +71,7 @@ public class ExchangeRateServiceTest {
             }
         }
                 """;
-    //Mock
+    // Mock
     mockWebServer.enqueue(
         new MockResponse().setResponseCode(HttpStatus.OK.value())
             .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -87,7 +88,7 @@ public class ExchangeRateServiceTest {
               response.getPrice().compareTo(new BigDecimal("1029310.6450322965")) == 0;
         })
         .verifyComplete();
-    //Assert
+    // Assert
     RecordedRequest recordedRequest = mockWebServer.takeRequest();
     assertEquals("GET", recordedRequest.getMethod());
   }

@@ -18,7 +18,7 @@ public class ErrorResponse {
         this.timestamp = Instant.now();
         this.message = message;
     }
-    
+
     public Instant getTimestamp() {
         return this.timestamp;
     }
@@ -33,5 +33,5 @@ public class ErrorResponse {
 
     public void setMessage(List<String> message) {
         this.message = message;
-    }    
+    }
 }
