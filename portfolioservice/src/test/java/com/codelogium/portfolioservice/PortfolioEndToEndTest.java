@@ -3,7 +3,9 @@ package com.codelogium.portfolioservice;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import org.junit.jupiter.api.AfterEach;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,17 +32,16 @@ import okhttp3.mockwebserver.MockWebServer;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class PortfolioEndToEndTest {
-    
+
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private UserService userService;
-    
+
     @Autowired
     private PortfolioService portfolioService;
 
@@ -54,46 +55,69 @@ public class PortfolioEndToEndTest {
 
     private static MockWebServer mockWebServer;
 
+    @BeforeAll
+    static void setUpBeforeAll() throws IOException {
+        mockWebServer = new MockWebServer();
+        mockWebServer.start(9090);
+    }
+
     /*
-     *  @DynamicPropertySource method runs
-     *  MockWebServer starts
-     *  URL gets registered as a property
-     *  Spring context initializes using the registered properties
+     * @DynamicPropertySource method runs
+     * MockWebServer starts
+     * URL gets registered as a property
+     * Spring context initializes using the registered properties
      */
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
-        mockWebServer = new MockWebServer();
-        try {
-            mockWebServer.start(9090);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to start MockWebServer", e);
-        }
         registry.add("exchangerate.base.url", () -> mockWebServer.url("/").toString());
     }
 
     @BeforeEach
-    void setUp() throws Exception {
-        
-        testUser = userService.createUser(new User(null, "Driss", "Boumlik", LocalDate.parse("1999-12-01"), "Porgrammer", null));
+    void setUpBeforeEach() throws Exception {
+        /*
+         * No need to clear the queue between tests since only one test is using it.
+         * If we later add more tests that use the MockWebServer, we might need to
+         * handle the queue then, but for now, it's working as intended!
+         * 
+         * //Clear any queued responses
+         * while (!(mockWebServer.getRequestCount() == 0)) {
+         * mockWebServer.takeRequest(0, TimeUnit.MILLISECONDS);
+         * }
+         * 
+         * Another workaround would be
+         * // Record the current request count to process only new requests later
+         * mockWebServer.takeRequest(1, TimeUnit.MILLISECONDS); // Discard any pending
+         * requests
+         * 
+         */
+
+        testUser = userService
+                .createUser(new User(null, "Driss", "Boumlik", LocalDate.parse("1999-12-01"), "Porgrammer", null));
 
         // Seed databases
-        testPortfolio = portfolioService.createPortfolio(testUser.getId(), new Portfolio(null, "Tech Stock Investment", null, null));
+        testPortfolio = portfolioService.createPortfolio(testUser.getId(),
+                new Portfolio(null, "Tech Stock Investment", null, null));
 
-        holdingService.createHolding(testPortfolio.getId(), testUser.getId(), new Holding(null, "BTC", BigDecimal.valueOf(213.45), null));
+        holdingService.createHolding(testPortfolio.getId(), testUser.getId(),
+                new Holding(null, "BTC", BigDecimal.valueOf(213.45), null));
 
-        holdingService.createHolding(testPortfolio.getId(), testUser.getId(), new Holding(null, "ETH", BigDecimal.valueOf(195.50), null));
-        
+        holdingService.createHolding(testPortfolio.getId(), testUser.getId(),
+                new Holding(null, "ETH", BigDecimal.valueOf(195.50), null));
+
     }
 
-    @AfterEach
-    void tearDown() throws Exception {
-        mockWebServer.shutdown();
+    // Properly shutdown the server after all tests complete
+    @AfterAll
+    static void tearDown() throws IOException {
+        if (mockWebServer != null) {
+            mockWebServer.shutdown();
+        }
     }
 
     @Test
     public void shouldPostPortfolioSuccessfully() throws Exception {
         String data = objectMapper.writeValueAsString(
-            new Portfolio(null, "CodeLogium Investment", testUser, null));
+                new Portfolio(null, "CodeLogium Investment", testUser, null));
 
         RequestBuilder request = MockMvcRequestBuilders
                 .post("/users/" + testUser.getId() + "/portfolios")
@@ -101,15 +125,16 @@ public class PortfolioEndToEndTest {
                 .content(data);
 
         mockMvc.perform(request)
-        .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.name").value("CodeLogium Investment"));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("CodeLogium Investment"));
     }
 
     @Test
     void shouldFailWhenCreatingPortfolio() throws Exception {
         String data = objectMapper.writeValueAsString(new Portfolio(null, "   ", testUser, null));
 
-        RequestBuilder request = MockMvcRequestBuilders.post("/users/"+ testUser.getId() + " /portfolios").contentType(MediaType.APPLICATION_JSON_VALUE).content(data);
+        RequestBuilder request = MockMvcRequestBuilders.post("/users/" + testUser.getId() + " /portfolios")
+                .contentType(MediaType.APPLICATION_JSON_VALUE).content(data);
 
         mockMvc.perform(request).andExpect(status().isBadRequest());
     }
@@ -117,11 +142,11 @@ public class PortfolioEndToEndTest {
     @Test
     void shouldGetPortfolioSuccessfully() throws Exception {
         RequestBuilder request = MockMvcRequestBuilders
-            .get("/users/"+ testUser.getId() + "/portfolios/" + testPortfolio.getId());
+                .get("/users/" + testUser.getId() + "/portfolios/" + testPortfolio.getId());
 
         mockMvc.perform(request).andExpect(status().isOk())
-        .andExpect(jsonPath("$.name").value("Tech Stock Investment"))
-        .andExpect(jsonPath("$.id").value(testPortfolio.getId()));
+                .andExpect(jsonPath("$.name").value("Tech Stock Investment"))
+                .andExpect(jsonPath("$.id").value(testPortfolio.getId()));
     }
 
     @Test
@@ -130,9 +155,9 @@ public class PortfolioEndToEndTest {
         String requestData = objectMapper.writeValueAsString(testPortfolio);
 
         RequestBuilder request = MockMvcRequestBuilders
-                                .patch("/users/" + testUser.getId() +"/portfolios/" + testPortfolio.getId())
-                                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                .content(requestData);
+                .patch("/users/" + testUser.getId() + "/portfolios/" + testPortfolio.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(requestData);
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
@@ -148,8 +173,9 @@ public class PortfolioEndToEndTest {
     }
 
     @Test
-    void shouldRemoveUserSuccessfully() throws Exception {
-        RequestBuilder request = MockMvcRequestBuilders.delete("/users/" + testUser.getId() + "/portfolios/" + testPortfolio.getId());
+    void shouldRemovePortfolioSuccessfully() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders
+                .delete("/users/" + testUser.getId() + "/portfolios/" + testPortfolio.getId());
 
         mockMvc.perform(request).andExpect(status().isNoContent());
     }
@@ -158,22 +184,23 @@ public class PortfolioEndToEndTest {
     void shouldCalculateValuation() throws Exception {
         // Mock exchange rate API for BTC
         mockWebServer.enqueue(
-            new MockResponse().setResponseCode(HttpStatus.OK.value())
-            .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .setBody("{\"price\": 9850.543}"));
+                new MockResponse().setResponseCode(HttpStatus.OK.value())
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody("{\"price\": 9850.543}"));
 
         // Mock exchange rate API for ETH
         mockWebServer.enqueue(
-            new MockResponse().setResponseCode(HttpStatus.OK.value())
-            .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .setBody("{\"price\": 7543.987}")
-        );
+                new MockResponse().setResponseCode(HttpStatus.OK.value())
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody("{\"price\": 7543.987}"));
 
-        RequestBuilder request = MockMvcRequestBuilders.get("/users/" + testUser.getId() + "/portfolios/" + testPortfolio.getId() + "/valuation").queryParam("base", "EUR");
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/users/" + testUser.getId() + "/portfolios/" + testPortfolio.getId() + "/valuation")
+                .queryParam("base", "EUR");
 
         mockMvc.perform(request).andExpect(status().isOk())
-        .andExpect(content().string("3577447.86185"));
-        
+                .andExpect(content().string("3577447.86185"));
+
     }
 
     @Test
@@ -181,7 +208,7 @@ public class PortfolioEndToEndTest {
         RequestBuilder request = MockMvcRequestBuilders.get("/users/" + testUser.getId() + "/portfolios/all");
 
         mockMvc.perform(request).andExpect(status().isOk())
-        .andExpect(jsonPath("$.size()").value(1))
-        .andExpect(jsonPath("$.[?(@.name == \"Tech Stock Investment\")]").exists());
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$.[?(@.name == \"Tech Stock Investment\")]").exists());
     }
 }
