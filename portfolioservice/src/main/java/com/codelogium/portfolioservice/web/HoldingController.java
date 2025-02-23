@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @AllArgsConstructor
 @RequestMapping(value = "users/{userId}/portfolios/{portfolioId}/holdings", produces = MediaType.APPLICATION_JSON_VALUE)
 public class HoldingController {
-    
+
     private HoldingService holdingService;
 
     @PostMapping
@@ -36,17 +36,17 @@ public class HoldingController {
     public ResponseEntity<Holding> retrieveHolding(@PathVariable Long holdingId, @PathVariable Long portfolioId, @PathVariable Long userId) {
         return new ResponseEntity<>(holdingService.retrieveHolding(holdingId, portfolioId, userId), HttpStatus.OK);
     }
-    
+
     @PatchMapping("/{holdingId}")
     public ResponseEntity<Holding> updateHolding(@PathVariable Long holdingId, @PathVariable Long portfolioId, @PathVariable Long userId, @RequestBody @Valid Holding holding) {
-        return new ResponseEntity<>(holdingService.updateHolding(holdingId, portfolioId, userId, holding), HttpStatus.OK);
+        return new ResponseEntity<>(holdingService.updateHolding(holdingId, portfolioId, userId, holding),HttpStatus.OK);
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<Holding>> retrieveHoldingsByPortfolioId(@PathVariable Long userId, @PathVariable Long portfolioId) {
         return new ResponseEntity<>(holdingService.retrieveHoldingsByPortfolioId(portfolioId, userId), HttpStatus.OK);
     }
-    
+
     @DeleteMapping("/{holdingId}")
     public ResponseEntity<HttpStatus> removeHolding(@PathVariable Long holdingId, @PathVariable Long portfolioId, @PathVariable Long userId) {
         holdingService.removeHolding(holdingId, portfolioId, userId);

@@ -37,7 +37,7 @@ public class Portfolio {
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonBackReference
     @JoinColumn(name = "user_id") // creates a foreign key
-    private User user; //each portfolio -> One User
+    private User user; // each portfolio -> One User
 
     @JsonManagedReference
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)

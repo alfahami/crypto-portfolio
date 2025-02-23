@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ErrorResponse {
-    
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     private Instant timestamp;
     private List<String> messages;
@@ -20,5 +20,5 @@ public class ErrorResponse {
         this.timestamp = Instant.now();
         this.messages = messages;
     }
-    
+
 }

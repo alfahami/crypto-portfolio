@@ -41,6 +41,7 @@ public class User {
     @NotBlank(message = "Profession cannot be null or blank")
     private String profession;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) 
-    private List<Portfolio> portfolios = new ArrayList<>(); // One User -> Many Portfolios | prevents orphanRemoval errors
+    // One User -> Many Portfolios
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Portfolio> portfolios = new ArrayList<>(); // prevents orphanRemoval errors
 }

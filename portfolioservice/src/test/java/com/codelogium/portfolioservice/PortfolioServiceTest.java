@@ -78,24 +78,24 @@ public class PortfolioServiceTest {
 
         when(userRepository.existsById(1L)).thenReturn(true);
         when(portfolioRepository.findByIdAndUserId(10L, 1L)).thenReturn(Optional.of(portfolio));
-        
+
         // Mock API for BTC
         mockWebServer.enqueue(
-            new MockResponse().setResponseCode(HttpStatus.OK.value())
-            .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .setBody("{\"price\": 1259.54}"));
+                new MockResponse().setResponseCode(HttpStatus.OK.value())
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody("{\"price\": 1259.54}"));
 
         // Mock API for ETH
         mockWebServer.enqueue(
-            new MockResponse().setResponseCode(HttpStatus.OK.value())
-            .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .setBody("{\"price\": 895.35}"));
+                new MockResponse().setResponseCode(HttpStatus.OK.value())
+                        .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                        .setBody("{\"price\": 895.35}"));
 
         // AcT
         BigDecimal result = portfolioService.valuation(1L, 10L, "EUR");
 
         // Assert
-        assertEquals(new BigDecimal("67390.1342"), result); 
+        assertEquals(new BigDecimal("67390.1342"), result);
     }
 
     @Test
@@ -108,7 +108,7 @@ public class PortfolioServiceTest {
         when(userRepository.existsById(1L)).thenReturn(true);
         when(portfolioRepository.findByIdAndUserId(10L, 1L)).thenReturn(Optional.of(portfolio));
 
-        //Act
+        // Act
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
             portfolioService.valuation(1L, 10L, "MAD");
         });

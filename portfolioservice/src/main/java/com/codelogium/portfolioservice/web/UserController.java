@@ -18,8 +18,6 @@ import com.codelogium.portfolioservice.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
-
-
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -41,7 +39,7 @@ public class UserController {
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User newUser) {
         return new ResponseEntity<>(userService.updateUser(id, newUser), HttpStatus.OK);
     }
-    
+
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> removeUser(@PathVariable Long id) {
         userService.removeUser(id);

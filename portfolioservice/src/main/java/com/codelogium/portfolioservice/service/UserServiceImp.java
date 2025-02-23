@@ -16,7 +16,7 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class UserServiceImp implements UserService {
-    
+
     private UserRepository userRepository;
 
     @Override
@@ -32,11 +32,11 @@ public class UserServiceImp implements UserService {
     @Transactional // commit changes or roll back completely if failure
     @Override
     public User updateUser(Long id, User newUser) {
-        
+
         User existingUser = unwrapUser(id, userRepository.findById(id));
         newUser.setId(id); // ignore ID request in the body as it might be intentionally changed
 
-        //Only update fields if they're not null in newUser
+        // Only update fields if they're not null in newUser
         updateIfNotNull(existingUser::setFirstName, newUser.getFirstName());
         updateIfNotNull(existingUser::setLastName, newUser.getLastName());
         updateIfNotNull(existingUser::setBirthDate, newUser.getBirthDate());
@@ -52,7 +52,9 @@ public class UserServiceImp implements UserService {
     }
 
     public static User unwrapUser(Long id, Optional<User> optionalUser) {
-        if(optionalUser.isPresent()) return optionalUser.get();
-        else throw new ResourceNotFoundException(id, User.class);
+        if (optionalUser.isPresent())
+            return optionalUser.get();
+        else
+            throw new ResourceNotFoundException(id, User.class);
     }
 }

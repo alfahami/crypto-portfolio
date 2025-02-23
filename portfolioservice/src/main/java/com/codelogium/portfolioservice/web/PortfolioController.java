@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/users/{userId}/portfolios", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -31,7 +30,8 @@ public class PortfolioController {
     private PortfolioService portfolioService;
 
     @PostMapping
-    public ResponseEntity<Portfolio> createPortfolio(@PathVariable Long userId, @RequestBody @Valid Portfolio portfolio) {
+    public ResponseEntity<Portfolio> createPortfolio(@PathVariable Long userId,
+            @RequestBody @Valid Portfolio portfolio) {
         return new ResponseEntity<>(portfolioService.createPortfolio(userId, portfolio), HttpStatus.CREATED);
     }
 
@@ -42,7 +42,7 @@ public class PortfolioController {
 
     @PatchMapping("/{portfolioId}")
     public ResponseEntity<Portfolio> updatePortfolio(@PathVariable Long portfolioId, @PathVariable Long userId, @RequestBody @Valid Portfolio portfolio) {
-        ;
+        
         return new ResponseEntity<>(portfolioService.updatePortfolio(portfolioId, userId, portfolio), HttpStatus.OK);
     }
 
@@ -55,12 +55,10 @@ public class PortfolioController {
     public ResponseEntity<BigDecimal> getValuation(@PathVariable Long portfolioId, @PathVariable Long userId, @RequestParam String base) {
         return new ResponseEntity<>(portfolioService.valuation(userId, portfolioId, base), HttpStatus.OK);
     }
-    
-    
+
     @DeleteMapping("/{portfolioId}")
     public ResponseEntity<HttpStatus> removePortfolio(@PathVariable Long userId, @PathVariable Long portfolioId) {
-        portfolioService.removePortfolio(portfolioId, userId);;
+        portfolioService.removePortfolio(portfolioId, userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-    
 }

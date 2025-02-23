@@ -22,7 +22,7 @@ import com.codelogium.portfolioservice.service.UserServiceImp;
 
 @ExtendWith(SpringExtension.class)
 public class UserServiceTest {
-    
+
     private UserService userService;
 
     @Mock
@@ -36,22 +36,22 @@ public class UserServiceTest {
         userService = new UserServiceImp(userRepository);
 
         users = Arrays.asList(
-            new User(1L, "John", "Doe", LocalDate.parse("1999-09-24"), "Developer", null),
-            new User(2L, "Doe", "Jane", LocalDate.parse("1991-09-24"), "Technical Architect", null),
-            new User(3L, "Ludacris", "Lamar", LocalDate.parse("1989-09-24"), "Rap Singer", null)
-        );
+                new User(1L, "John", "Doe", LocalDate.parse("1999-09-24"), "Developer", null),
+                new User(2L, "Doe", "Jane", LocalDate.parse("1991-09-24"), "Technical Architect", null),
+                new User(3L, "Ludacris", "Lamar", LocalDate.parse("1989-09-24"), "Rap Singer", null));
     }
 
     @Test
     void shouldUpdateUserSuccessfully() {
         // Mock
         when(userRepository.findById(2L)).thenReturn(Optional.of(users.get(1)));
-        
+
         User retrievedUser = userRepository.findById(2L).get();
 
         retrievedUser.setFirstName("Tupac");
         retrievedUser.setLastName("Shakur");
-        retrievedUser.setId(5L); // intentionally tampering the id in order to test the ignorance of the ID in the service
+        // intentionally tampering the id in order to test the ignorance of the ID in the service
+        retrievedUser.setId(5L); 
 
         when(userRepository.save(any(User.class))).thenReturn(retrievedUser);
 
@@ -59,7 +59,8 @@ public class UserServiceTest {
         User result = userService.updateUser(2L, retrievedUser);
 
         // Assert
-        assertEquals(2L, result.getId(), "User ID shouldn't be tampered"); // extra message is an optional failure message to be displayed in case the test fails
+        // extra message is an optional failure message to be displayed in case the test fails
+        assertEquals(2L, result.getId(), "User ID shouldn't be tampered"); 
         assertEquals("Tupac", result.getFirstName());
         assertEquals("Shakur", result.getLastName());
         assertEquals(LocalDate.parse("1991-09-24"), result.getBirthDate());

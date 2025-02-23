@@ -41,11 +41,11 @@ public class ApplicationExceptionHanlder extends ResponseEntityExceptionHandler 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidationExceptions(
             MethodArgumentNotValidException ex) {
-                List<String> errors = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
 
-                ex.getBindingResult().getAllErrors().forEach((error) -> errors.add(error.getDefaultMessage()));
+        ex.getBindingResult().getAllErrors().forEach((error) -> errors.add(error.getDefaultMessage()));
 
-                ErrorResponse errorResponse = new ErrorResponse(errors);
+        ErrorResponse errorResponse = new ErrorResponse(errors);
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
@@ -57,5 +57,4 @@ public class ApplicationExceptionHanlder extends ResponseEntityExceptionHandler 
 
         return Mono.just(ResponseEntity.badRequest().body(error));
     }
-
 }

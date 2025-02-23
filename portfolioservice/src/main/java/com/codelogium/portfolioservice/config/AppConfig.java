@@ -9,7 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 public class AppConfig {
-    
+
     @Value("${exchangerate.base.url}")
     private String baseUrl;
 
@@ -17,7 +17,7 @@ public class AppConfig {
     public WebClient webClient(WebClient.Builder builder) {
         // Registring WebCLient in the spring context
         return builder.baseUrl(baseUrl)
-                      .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                      .build();
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
     }
 }
