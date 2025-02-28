@@ -22,12 +22,12 @@ public class HoldingServiceImp implements HoldingService {
 
     private HoldingRepository holdingRepository;
     private PortfolioRepository portfolioRepository;
-    private PortfolioServiceImp portfolioServiceImp;
 
     @Override
     public Holding createHolding(Long portfolioId, Long userId, Holding holding) {
 
-        portfolioServiceImp.validateUserExists(userId);
+        UserServiceImp.unwrapUser(userId, portfolioRepository.findUserByPortfolioId(portfolioId));
+
         // Checks and Retrieve the portfolio that belongs to the calling user
         Portfolio portfolio = PortfolioServiceImp.unwrapPortfolio(portfolioId,
             portfolioRepository.findByIdAndUserId(portfolioId, userId));
@@ -42,7 +42,7 @@ public class HoldingServiceImp implements HoldingService {
 
         // Relying on portfolio service to check for user as the uri could be tampered
         // at this level
-        portfolioServiceImp.validateUserExists(userId);
+        UserServiceImp.unwrapUser(userId, portfolioRepository.findUserByPortfolioId(portfolioId));
 
         PortfolioServiceImp.unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
 
@@ -54,7 +54,7 @@ public class HoldingServiceImp implements HoldingService {
     @Override
     public Holding updateHolding(Long holdingId, Long portfolioId, Long userId, Holding newHolding) {
 
-        portfolioServiceImp.validateUserExists(userId);
+        UserServiceImp.unwrapUser(userId, portfolioRepository.findUserByPortfolioId(portfolioId));
 
         PortfolioServiceImp.unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
 
@@ -76,18 +76,22 @@ public class HoldingServiceImp implements HoldingService {
     public List<Holding> retrieveHoldingsByPortfolioId(Long portfolioId, Long userId) {
 
         // Relying on portfolio service to check for user as the uri could be tampered at this level
-        portfolioServiceImp.validateUserExists(userId);
+        UserServiceImp.unwrapUser(userId, portfolioRepository.findUserByPortfolioId(portfolioId));
 
         // Ensure ownership of user -> portfolio
         PortfolioServiceImp.unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
 
-        return holdingRepository.findByPortfolioId(portfolioId);
+        List<Holding> holdings = holdingRepository.findByPortfolioId(portfolioId);
+
+        if(holdings == null || holdings.size() == 0) throw new ResourceNotFoundException("No holding created yet.");
+
+        return holdings;
     }
 
     @Override
     public void removeHolding(Long holdingId, Long portfolioId, Long userId) {
         // Relying on portfolio service to check for user as the uri could be tampered at this level
-        portfolioServiceImp.validateUserExists(userId);
+        UserServiceImp.unwrapUser(userId, portfolioRepository.findUserByPortfolioId(portfolioId));
 
         PortfolioServiceImp.unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
 

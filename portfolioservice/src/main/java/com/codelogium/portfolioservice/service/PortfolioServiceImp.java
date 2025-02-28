@@ -65,6 +65,10 @@ public class PortfolioServiceImp implements PortfolioService {
     @Override
     public List<Portfolio> retrievePortfoliosByUserId(Long userId) {
         UserServiceImp.unwrapUser(userId, userRepository.findById(userId));
+        List<Portfolio> portfolios = portfolioRepository.findByUserId(userId);
+
+        if(portfolios == null || portfolios.size() == 0) throw new ResourceNotFoundException("No portfolio created yet.");
+
         return portfolioRepository.findByUserId(userId);
     }
 
@@ -80,7 +84,7 @@ public class PortfolioServiceImp implements PortfolioService {
     @Override
     public BigDecimal valuation(Long userId, Long portfolioId, String base) {
         // check if the user exists, uri param was not tempered
-        validateUserExists(userId);
+        UserServiceImp.unwrapUser(userId, portfolioRepository.findUserByPortfolioId(portfolioId));
 
         Portfolio portfolio = unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
 
@@ -126,10 +130,10 @@ public class PortfolioServiceImp implements PortfolioService {
     }
 
     // Other relation down level might need to check for user existance
-    public void validateUserExists(Long userId) {
-        if (!userRepository.existsById(userId))
-            throw new ResourceNotFoundException(userId, User.class);
-    }
+    // public void validateUserExists(Long userId) {
+    //     if (!userRepository.existsById(userId))
+    //         throw new ResourceNotFoundException(userId, User.class);
+    // }
 
     public static Portfolio unwrapPortfolio(Long portfolioId, Optional<Portfolio> optPorfolio) {
         if (optPorfolio.isPresent())
