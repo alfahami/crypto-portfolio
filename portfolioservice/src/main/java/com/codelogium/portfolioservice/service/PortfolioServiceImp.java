@@ -129,12 +129,6 @@ public class PortfolioServiceImp implements PortfolioService {
         }
     }
 
-    // Other relation down level might need to check for user existance
-    // public void validateUserExists(Long userId) {
-    //     if (!userRepository.existsById(userId))
-    //         throw new ResourceNotFoundException(userId, User.class);
-    // }
-
     public static Portfolio unwrapPortfolio(Long portfolioId, Optional<Portfolio> optPorfolio) {
         if (optPorfolio.isPresent())
             return optPorfolio.get();
