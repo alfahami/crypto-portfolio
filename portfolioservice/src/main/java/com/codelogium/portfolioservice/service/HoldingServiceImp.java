@@ -9,8 +9,11 @@ import org.springframework.stereotype.Service;
 
 import com.codelogium.portfolioservice.entity.Holding;
 import com.codelogium.portfolioservice.entity.Portfolio;
+import com.codelogium.portfolioservice.entity.User;
 import com.codelogium.portfolioservice.exception.ResourceNotFoundException;
 import com.codelogium.portfolioservice.respository.HoldingRepository;
+import com.codelogium.portfolioservice.respository.PortfolioRepository;
+import com.codelogium.portfolioservice.respository.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -20,13 +23,17 @@ import lombok.AllArgsConstructor;
 public class HoldingServiceImp implements HoldingService {
 
     private HoldingRepository holdingRepository;
-    private ValidationAndAuthorizationService validationAndAuthorizationService;
+    private PortfolioRepository portfolioRepository;
+    private UserRepository userRepository; // for valiadtion checks
+    
 
     @Override
     public Holding createHolding(Long portfolioId, Long userId, Holding holding) {
 
         // Validata user, check and retrieves portfolio
-        Portfolio portfolio = validationAndAuthorizationService.validateUserAndGetPortfolio(portfolioId, userId);        
+        validateUserAndChecksOwnership(portfolioId, userId);
+        
+        Portfolio portfolio = portfolioRepository.findByIdAndUserId(portfolioId, userId).get();
 
         // Setting the relation portfolio <- holding
         holding.setPortfolio(portfolio);
@@ -37,7 +44,7 @@ public class HoldingServiceImp implements HoldingService {
     public Holding retrieveHolding(Long holdingId, Long portfolioId, Long userId) {
 
         // Validata user, check portfolio ownership
-        validationAndAuthorizationService.validateUserAndGetPortfolio(portfolioId, userId); 
+        validateUserAndChecksOwnership(portfolioId, userId);
 
         return unwrapHolding(holdingId,
                 holdingRepository.findByIdAndPortfolioIdAndPortfolioUserId(holdingId, portfolioId, userId));
@@ -48,7 +55,7 @@ public class HoldingServiceImp implements HoldingService {
     public Holding updateHolding(Long holdingId, Long portfolioId, Long userId, Holding newHolding) {
 
         // Validata user, check portfolio ownership
-        validationAndAuthorizationService.validateUserAndGetPortfolio(portfolioId, userId); 
+        validateUserAndChecksOwnership(portfolioId, userId);
 
         // Checks if the holding exists
         // Ensure ownership of user -> portfolio -> holding
@@ -68,7 +75,7 @@ public class HoldingServiceImp implements HoldingService {
     public List<Holding> retrieveHoldingsByPortfolioId(Long portfolioId, Long userId) {
 
         // Validata user, check user->portfolio ownership
-        validationAndAuthorizationService.validateUserAndGetPortfolio(portfolioId, userId); 
+        validateUserAndChecksOwnership(portfolioId, userId);
 
         List<Holding> holdings = holdingRepository.findByPortfolioId(portfolioId);
 
@@ -81,12 +88,19 @@ public class HoldingServiceImp implements HoldingService {
     public void removeHolding(Long holdingId, Long portfolioId, Long userId) {
        
         // Validata user, check user->portfolio ownership
-       validationAndAuthorizationService.validateUserAndGetPortfolio(portfolioId, userId); 
+        validateUserAndChecksOwnership(portfolioId, userId);
 
         Holding holding = unwrapHolding(portfolioId,
                 holdingRepository.findByIdAndPortfolioIdAndPortfolioUserId(holdingId, portfolioId, userId));
 
         holdingRepository.delete(holding);
+    }
+
+    private void validateUserAndChecksOwnership(Long portfolioId, Long userId) {
+        
+        if(!userRepository.existsById(userId)) throw new ResourceNotFoundException(userId, User.class);
+
+        if(!portfolioRepository.existsByIdAndUserId(portfolioId, userId)) throw new ResourceNotFoundException(portfolioId, Portfolio.class);
     }
 
     public static Holding unwrapHolding(Long holdingId, Optional<Holding> optHolding) {
@@ -95,4 +109,5 @@ public class HoldingServiceImp implements HoldingService {
         else
             throw new ResourceNotFoundException(holdingId, Holding.class);
     }
+
 }
