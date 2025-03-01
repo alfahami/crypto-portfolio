@@ -28,8 +28,7 @@ public class ExchangeRateController {
         return exchangeRateService.getAllData();
     }
 
-    // Request Params validation could be handled usign a record java class inside
-    // dto
+    // Request Params validation could be handled usign a record java class inside dto
     @GetMapping
     public Mono<CryptoResponseMapper> retrievePrice(
             @RequestParam @NotBlank(message = "Symbol cannot be null or blank") String symbol,
