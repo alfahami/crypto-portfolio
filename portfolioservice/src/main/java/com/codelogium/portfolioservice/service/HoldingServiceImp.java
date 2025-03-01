@@ -26,13 +26,11 @@ public class HoldingServiceImp implements HoldingService {
     private PortfolioRepository portfolioRepository;
     private UserRepository userRepository; // for valiadtion checks
     
-
     @Override
     public Holding createHolding(Long portfolioId, Long userId, Holding holding) {
 
         // Validata user, check and retrieves portfolio
         validateUserAndChecksOwnership(portfolioId, userId);
-        
         Portfolio portfolio = portfolioRepository.findByIdAndUserId(portfolioId, userId).get();
 
         // Setting the relation portfolio <- holding
@@ -62,8 +60,7 @@ public class HoldingServiceImp implements HoldingService {
         Holding existingHolding = unwrapHolding(holdingId,
                 holdingRepository.findByIdAndPortfolioIdAndPortfolioUserId(holdingId, portfolioId, userId));
 
-        // No need to as we're updating the retrieved object. Ignore request body ID, could be changed tho
-        // newHolding.setId(existingHolding.getId());
+        // No need to as we're updating the retrieved object. Ignore request body ID, could be changed tho newHolding.setId(existingHolding.getId());
 
         updateIfNotNull(existingHolding::setSymbol, newHolding.getSymbol());
         updateIfNotNull(existingHolding::setAmount, newHolding.getAmount());
@@ -79,28 +76,36 @@ public class HoldingServiceImp implements HoldingService {
 
         List<Holding> holdings = holdingRepository.findByPortfolioId(portfolioId);
 
-        if(holdings == null || holdings.size() == 0) throw new ResourceNotFoundException("No holding created yet.");
+        if (holdings == null || holdings.size() == 0)
+            throw new ResourceNotFoundException("No holding created yet.");
 
         return holdings;
     }
 
+    @Transactional
     @Override
     public void removeHolding(Long holdingId, Long portfolioId, Long userId) {
-       
+
         // Validata user, check user->portfolio ownership
         validateUserAndChecksOwnership(portfolioId, userId);
 
-        Holding holding = unwrapHolding(portfolioId,
+        Holding holding = unwrapHolding(holdingId,
                 holdingRepository.findByIdAndPortfolioIdAndPortfolioUserId(holdingId, portfolioId, userId));
+
+        // Remove from the portfolio holdings list to manually inform JPA about OrphanRemoval
+        Portfolio portfolio = holding.getPortfolio();
+        portfolio.getHoldings().remove(holding); // OrphanRemoval triggers automatically
 
         holdingRepository.delete(holding);
     }
 
     private void validateUserAndChecksOwnership(Long portfolioId, Long userId) {
-        
-        if(!userRepository.existsById(userId)) throw new ResourceNotFoundException(userId, User.class);
 
-        if(!portfolioRepository.existsByIdAndUserId(portfolioId, userId)) throw new ResourceNotFoundException(portfolioId, Portfolio.class);
+        if (!userRepository.existsById(userId))
+            throw new ResourceNotFoundException(userId, User.class);
+
+        if (!portfolioRepository.existsByIdAndUserId(portfolioId, userId))
+            throw new ResourceNotFoundException(portfolioId, Portfolio.class);
     }
 
     public static Holding unwrapHolding(Long holdingId, Optional<Holding> optHolding) {
@@ -109,5 +114,4 @@ public class HoldingServiceImp implements HoldingService {
         else
             throw new ResourceNotFoundException(holdingId, Holding.class);
     }
-
 }
