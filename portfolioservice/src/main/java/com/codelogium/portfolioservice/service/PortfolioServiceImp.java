@@ -82,9 +82,9 @@ public class PortfolioServiceImp implements PortfolioService {
     }
 
     @Override
-    public BigDecimal valuation(Long userId, Long portfolioId, String base) {
-        // check if the user exists, uri param was not tempered
-        UserServiceImp.unwrapUser(userId, portfolioRepository.findUserByPortfolioId(portfolioId));
+    public BigDecimal valuation(Long portfolioId, Long userId, String base) {
+        // check if the user exists, uri param was not tampered
+        UserServiceImp.unwrapUser(userId, portfolioRepository.findUserByPortfolioId(userId));
 
         Portfolio portfolio = unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
 

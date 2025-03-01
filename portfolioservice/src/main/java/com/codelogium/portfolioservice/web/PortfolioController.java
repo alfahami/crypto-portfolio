@@ -53,7 +53,7 @@ public class PortfolioController {
 
     @GetMapping("/{portfolioId}/valuation")
     public ResponseEntity<BigDecimal> getValuation(@PathVariable Long portfolioId, @PathVariable Long userId, @RequestParam String base) {
-        return new ResponseEntity<>(portfolioService.valuation(userId, portfolioId, base), HttpStatus.OK);
+        return new ResponseEntity<>(portfolioService.valuation(portfolioId, userId, base), HttpStatus.OK);
     }
 
     @DeleteMapping("/{portfolioId}")
