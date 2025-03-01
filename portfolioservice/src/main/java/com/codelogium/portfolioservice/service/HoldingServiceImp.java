@@ -63,8 +63,8 @@ public class HoldingServiceImp implements HoldingService {
         Holding existingHolding = unwrapHolding(holdingId,
                 holdingRepository.findByIdAndPortfolioIdAndPortfolioUserId(holdingId, portfolioId, userId));
 
-        // Ignore request body ID, could be changed tho
-        newHolding.setId(existingHolding.getId());
+        // No need to as we're updating the retrieved object. Ignore request body ID, could be changed tho
+        // newHolding.setId(existingHolding.getId());
 
         updateIfNotNull(existingHolding::setSymbol, newHolding.getSymbol());
         updateIfNotNull(existingHolding::setAmount, newHolding.getAmount());

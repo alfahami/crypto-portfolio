@@ -34,7 +34,8 @@ public class UserServiceImp implements UserService {
     public User updateUser(Long id, User newUser) {
 
         User existingUser = unwrapUser(id, userRepository.findById(id));
-        newUser.setId(id); // ignore ID request in the body as it might be intentionally changed
+        //No need to ignore Id tampering as we're modifying the retrieved object for the repository
+        // newUser.setId(id); // ignore ID request in the body as it might be intentionally changed
 
         // Only update fields if they're not null in newUser
         updateIfNotNull(existingUser::setFirstName, newUser.getFirstName());

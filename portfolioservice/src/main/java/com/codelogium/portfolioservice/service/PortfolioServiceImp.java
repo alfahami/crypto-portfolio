@@ -56,7 +56,7 @@ public class PortfolioServiceImp implements PortfolioService {
 
         Portfolio existingPortfolio = unwrapPortfolio(portfolioId,
                 portfolioRepository.findByIdAndUserId(portfolioId, userId));
-        newPortfolio.setId(existingPortfolio.getId()); // Ignore ID of request body
+        // newPortfolio.setId(existingPortfolio.getId()); // No need as we're modifying the retreived object - Ignore ID of request body
         updateIfNotNull(existingPortfolio::setName, newPortfolio.getName());
 
         return portfolioRepository.save(existingPortfolio);
