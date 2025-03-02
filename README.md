@@ -37,8 +37,6 @@ Building this application involved:
 - Writing **unit tests** and **integration tests** using `WebTestClient`.  
 - Learning how to **simulate or integrate** external APIs (this implementation uses **CoinMarketCap**, a real crypto API). 
 
-Here's an updated version with the addition of controller advice and error handling:
-
 ### **PortfolioService**
 - **Exploring JPA & Hibernate** for efficient data persistence and entity relationships.  
 - **Designing RESTful APIs** with proper CRUD operations for managing portfolios.  
