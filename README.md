@@ -156,6 +156,175 @@ mvn test
 <details>
   <summary>Click to expand for detailed API documentation</summary>
   
-  For detailed endpoint descriptions, request parameters, and response examples, check the **[Crypto Portfolio API Documentation](#)**.
 
+This section provides details endpoints, descriptions, request methods, and sample payloads of the **Crypto Portfolio API** 
+
+## Base URLs
+- **Portfolio Service**: `http://localhost:8080`
+- **Exchange Rate Service**: `http://localhost:8081`
+
+---
+
+# 1. Exchange Rate API
+
+## 1.1 Get Latest Exchange Rates
+**Endpoint:** `GET /exchange-rate/latest`
+- Retrieves the latest exchange rates for supported cryptocurrencies.
+
+**Request Example:**
+```http
+GET http://localhost:8081/exchange-rate/latest
+```
+
+## 1.2 Get Last Price for a Specific Symbol
+**Endpoint:** `GET /exchange-rate?symbol={symbol}&base={base}`
+- Retrieves the latest exchange rate for a specific cryptocurrency.
+
+**Request Example:**
+```http
+GET http://localhost:8081/exchange-rate?symbol=BTC&base=MAD
+```
+
+---
+
+# 2. User Management
+
+## 2.1 Create User
+**Endpoint:** `POST /users`
+- Creates a new user.
+
+**Request Example:**
+```json
+{
+  "firstName": "Tupac",
+  "lastName": "Amaru",
+  "birthDate": "1992-04-29",
+  "profession": "Producer"
+}
+```
+
+## 2.2 Retrieve User
+**Endpoint:** `GET /users/{userId}`
+- Retrieves details of a user by ID.
+
+## 2.3 Update User
+**Endpoint:** `PATCH /users/{userId}`
+- Updates user details.
+
+**Request Example:**
+```json
+{
+  "id": "1",
+  "lastName": "Shakur",
+  "birthDate": "1978-04-29",
+  "profession": "King of Rap"
+}
+```
+
+## 2.4 Remove User
+**Endpoint:** `DELETE /users/{userId}`
+- Deletes a user by ID.
+
+## 2.5 Retrieve All Portfolios for a User
+**Endpoint:** `GET /users/{userId}/portfolios/all`
+- Fetches all portfolios owned by a user.
+
+---
+
+# 3. Portfolio Management
+
+## 3.1 Create Portfolio
+**Endpoint:** `POST /users/{userId}/portfolios`
+- Creates a new portfolio for a user.
+
+**Request Example:**
+```json
+{
+  "name": "Medical Sales Stock"
+}
+```
+
+## 3.2 Retrieve Portfolio
+**Endpoint:** `GET /users/{userId}/portfolios/{portfolioId}`
+- Retrieves portfolio details by ID.
+
+## 3.3 Update Portfolio
+**Endpoint:** `PATCH /users/{userId}/portfolios/{portfolioId}`
+- Updates an existing portfolio.
+
+**Request Example:**
+```json
+{
+  "id": 1,
+  "name": "Shakur Music Investment"
+}
+```
+
+## 3.4 Remove Portfolio
+**Endpoint:** `DELETE /users/{userId}/portfolios/{portfolioId}`
+- Deletes a portfolio.
+
+## 3.5 Retrieve All Holdings in a Portfolio
+**Endpoint:** `GET /users/{userId}/portfolios/{portfolioId}/holdings/all`
+- Lists all holdings in a portfolio.
+
+## 3.6 Get Portfolio Valuation
+**Endpoint:** `GET /users/{userId}/portfolios/{portfolioId}/valuation?base={currency}`
+- Returns the total value of a portfolio in the specified base currency.
+
+**Request Example:**
+```http
+GET http://localhost:8080/users/1/portfolios/1/valuation?base=MAD
+```
+
+---
+
+# 4. Holding Management
+
+## 4.1 Create Holding
+**Endpoint:** `POST /users/{userId}/portfolios/{portfolioId}/holdings`
+- Adds a cryptocurrency holding to a portfolio.
+
+**Request Example:**
+```json
+{
+  "symbol": "LTC",
+  "amount": 15.5
+}
+```
+
+## 4.2 Retrieve Holding
+**Endpoint:** `GET /users/{userId}/portfolios/{portfolioId}/holdings/{holdingId}`
+- Retrieves a specific holding by ID.
+
+## 4.3 Update Holding
+**Endpoint:** `PATCH /users/{userId}/portfolios/{portfolioId}/holdings/{holdingId}`
+- Updates a holding.
+
+**Request Example:**
+```json
+{
+  "symbol": "BTC",
+  "amount": 345.123
+}
+```
+
+## 4.4 Remove Holding
+**Endpoint:** `DELETE /users/{userId}/portfolios/{portfolioId}/holdings/{holdingId}`
+- Removes a holding from a portfolio.
+
+**Request Example:**
+```http
+DELETE http://localhost:8080/users/1/portfolios/1/holdings/3
+```
+
+---
+
+## Notes
+- All endpoints assume a `localhost` setup. Update the base URL for production.
+- `DELETE` operations do not return a body but should return `204 No Content`.
+- `PATCH` allows partial updates.
+- Consider adding authentication and validation layers if necessary.
+
+This documentation provides a structured overview of all available API operations for the crypto portfolio service.
 </details>
