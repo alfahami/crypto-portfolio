@@ -24,7 +24,7 @@ While the application follows a modular approach and runs services on separate p
 ---
 
 ## Authentication  
-This API does not currently implement authentication. 
+This API does not currently implement authentication.\
 In a production environment, appropriate authentication mechanisms (e.g., JWT, OAuth2) should be integrated.  
 
 ---
@@ -35,7 +35,7 @@ Building this application involved:
 #### ExchangerateService
 - Exploring **reactive programming** concepts using `WebClient` to call an external API.  
 - Writing **unit tests** and **integration tests** using `WebTestClient`.  
-- Learning how to **simulate or integrate** external APIs (this implementation uses **CoinMarketCap**, a real crypto API). 
+- Learning how to **simulate or integrate** external APIs using `MockWebServer` form [okhttp](https://github.com/square/okhttp) okhttp (this implementation uses **CoinMarketCap**, a real crypto API). 
 
 ### **PortfolioService**
 - **Exploring JPA & Hibernate** for efficient data persistence and entity relationships.  
