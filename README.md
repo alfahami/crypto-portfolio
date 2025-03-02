@@ -12,7 +12,7 @@ The API consists of two main services:
 - **Portfolio Service** – Manages users, portfolios, and holdings.  
 - **Exchange Rate Service** – Provides cryptocurrency exchange rates using [CoinMarketCap](https://coinmarketcap.com/api/documentation/v1/#section/Quick-Start-Guide).  
 
-### ⚠ Architecture Note  
+### ⚙ Architecture Note  
 While the application follows a modular approach and runs services on separate ports, it does not fully implement a **microservices architecture** due to limited experience in that area.  
 
 ---
@@ -151,7 +151,7 @@ mvn test
 
 ---
 
-# API Documentation  
+## API Documentation  
 
 <details>
   <summary>Click to expand for detailed API documentation</summary>
@@ -159,15 +159,15 @@ mvn test
 
 This section provides details endpoints, descriptions, request methods, and sample payloads of the **Crypto Portfolio API** 
 
-## Base URLs
+### Base URLs
 - **Portfolio Service**: `http://localhost:8080`
 - **Exchange Rate Service**: `http://localhost:8081`
 
 ---
 
-# 1. Exchange Rate API
+### 1. Exchange Rate API
 
-## 1.1 Get Latest Exchange Rates
+#### 1.1 Get Latest Exchange Rates
 **Endpoint:** `GET /exchange-rate/latest`
 - Retrieves the latest exchange rates for supported cryptocurrencies.
 
@@ -176,7 +176,7 @@ This section provides details endpoints, descriptions, request methods, and samp
 GET http://localhost:8081/exchange-rate/latest
 ```
 
-## 1.2 Get Last Price for a Specific Symbol
+#### 1.2 Get Last Price for a Specific Symbol
 **Endpoint:** `GET /exchange-rate?symbol={symbol}&base={base}`
 - Retrieves the latest exchange rate for a specific cryptocurrency.
 
@@ -187,9 +187,9 @@ GET http://localhost:8081/exchange-rate?symbol=BTC&base=MAD
 
 ---
 
-# 2. User Management
+### 2. User Management
 
-## 2.1 Create User
+#### 2.1 Create User
 **Endpoint:** `POST /users`
 - Creates a new user.
 
@@ -203,11 +203,11 @@ GET http://localhost:8081/exchange-rate?symbol=BTC&base=MAD
 }
 ```
 
-## 2.2 Retrieve User
+#### 2.2 Retrieve User
 **Endpoint:** `GET /users/{userId}`
 - Retrieves details of a user by ID.
 
-## 2.3 Update User
+#### 2.3 Update User
 **Endpoint:** `PATCH /users/{userId}`
 - Updates user details.
 
@@ -221,19 +221,19 @@ GET http://localhost:8081/exchange-rate?symbol=BTC&base=MAD
 }
 ```
 
-## 2.4 Remove User
+#### 2.4 Remove User
 **Endpoint:** `DELETE /users/{userId}`
 - Deletes a user by ID.
 
-## 2.5 Retrieve All Portfolios for a User
+#### 2.5 Retrieve All Portfolios for a User
 **Endpoint:** `GET /users/{userId}/portfolios/all`
 - Fetches all portfolios owned by a user.
 
 ---
 
-# 3. Portfolio Management
+### 3. Portfolio Management
 
-## 3.1 Create Portfolio
+#### 3.1 Create Portfolio
 **Endpoint:** `POST /users/{userId}/portfolios`
 - Creates a new portfolio for a user.
 
@@ -244,11 +244,11 @@ GET http://localhost:8081/exchange-rate?symbol=BTC&base=MAD
 }
 ```
 
-## 3.2 Retrieve Portfolio
+#### 3.2 Retrieve Portfolio
 **Endpoint:** `GET /users/{userId}/portfolios/{portfolioId}`
 - Retrieves portfolio details by ID.
 
-## 3.3 Update Portfolio
+#### 3.3 Update Portfolio
 **Endpoint:** `PATCH /users/{userId}/portfolios/{portfolioId}`
 - Updates an existing portfolio.
 
@@ -260,15 +260,15 @@ GET http://localhost:8081/exchange-rate?symbol=BTC&base=MAD
 }
 ```
 
-## 3.4 Remove Portfolio
+#### 3.4 Remove Portfolio
 **Endpoint:** `DELETE /users/{userId}/portfolios/{portfolioId}`
 - Deletes a portfolio.
 
-## 3.5 Retrieve All Holdings in a Portfolio
+#### 3.5 Retrieve All Holdings in a Portfolio
 **Endpoint:** `GET /users/{userId}/portfolios/{portfolioId}/holdings/all`
 - Lists all holdings in a portfolio.
 
-## 3.6 Get Portfolio Valuation
+#### 3.6 Get Portfolio Valuation
 **Endpoint:** `GET /users/{userId}/portfolios/{portfolioId}/valuation?base={currency}`
 - Returns the total value of a portfolio in the specified base currency.
 
@@ -279,9 +279,9 @@ GET http://localhost:8080/users/1/portfolios/1/valuation?base=MAD
 
 ---
 
-# 4. Holding Management
+### 4. Holding Management
 
-## 4.1 Create Holding
+#### 4.1 Create Holding
 **Endpoint:** `POST /users/{userId}/portfolios/{portfolioId}/holdings`
 - Adds a cryptocurrency holding to a portfolio.
 
@@ -293,11 +293,11 @@ GET http://localhost:8080/users/1/portfolios/1/valuation?base=MAD
 }
 ```
 
-## 4.2 Retrieve Holding
+#### 4.2 Retrieve Holding
 **Endpoint:** `GET /users/{userId}/portfolios/{portfolioId}/holdings/{holdingId}`
 - Retrieves a specific holding by ID.
 
-## 4.3 Update Holding
+#### 4.3 Update Holding
 **Endpoint:** `PATCH /users/{userId}/portfolios/{portfolioId}/holdings/{holdingId}`
 - Updates a holding.
 
@@ -309,7 +309,7 @@ GET http://localhost:8080/users/1/portfolios/1/valuation?base=MAD
 }
 ```
 
-## 4.4 Remove Holding
+#### 4.4 Remove Holding
 **Endpoint:** `DELETE /users/{userId}/portfolios/{portfolioId}/holdings/{holdingId}`
 - Removes a holding from a portfolio.
 
@@ -320,7 +320,7 @@ DELETE http://localhost:8080/users/1/portfolios/1/holdings/3
 
 ---
 
-## Notes
+#### Notes
 - All endpoints assume a `localhost` setup. Update the base URL for production.
 - `DELETE` operations do not return a body but should return `204 No Content`.
 - `PATCH` allows partial updates.
