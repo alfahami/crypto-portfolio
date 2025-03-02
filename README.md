@@ -328,3 +328,6 @@ DELETE http://localhost:8080/users/1/portfolios/1/holdings/3
 
 This documentation provides a structured overview of all available API operations for the crypto portfolio service.
 </details>
+
+## License  
+This project is open-source and available under the **MIT License**.
