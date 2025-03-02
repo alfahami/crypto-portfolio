@@ -147,7 +147,7 @@ mvn test
   - Integration Tests (`WebTestClient`)  
 - **Documentation**:  
   - API Documentation: **[View Full API Documentation](#api-documentation)**  
-  - **Postman collection generated** from the application and can be found in the file `crypto-portfolio.json`.
+  - **Postman collection generated** from the application and can be found in the file `crypto-portfolio.postman_collection.json`.
 
 ---
 
