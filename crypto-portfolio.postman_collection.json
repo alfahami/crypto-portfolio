@@ -372,7 +372,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"symbol\":\"LTC\",\r\n    \"amount\": 15.5\r\n}",
+									"raw": "{\r\n    \"symbol\":\"BTC\",\r\n    \"amount\": 15.5\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -404,7 +404,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"symbol\":\"BTC\",\r\n    \"amount\": 345.123\r\n}",
+									"raw": "{\r\n    \"symbol\":\"BTC\",\r\n    \"amount\": 123.123\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -412,7 +412,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8080/users/1/portfolios/1/holdings/1",
+									"raw": "http://localhost:8080/users/1/portfolios/1/holdings/BTC",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -424,7 +424,7 @@
 										"portfolios",
 										"1",
 										"holdings",
-										"1"
+										"BTC"
 									]
 								}
 							},
@@ -436,7 +436,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/users/1/portfolios/1/holdings/1",
+									"raw": "http://localhost:8080/users/1/portfolios/1/holdings/BTC",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -448,7 +448,7 @@
 										"portfolios",
 										"1",
 										"holdings",
-										"1"
+										"BTC"
 									]
 								}
 							},
@@ -460,7 +460,7 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/users/1/portfolios/1/holdings/3",
+									"raw": "http://localhost:8080/users/1/portfolios/1/holdings/BTC",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -472,7 +472,7 @@
 										"portfolios",
 										"1",
 										"holdings",
-										"3"
+										"BTC"
 									]
 								}
 							},

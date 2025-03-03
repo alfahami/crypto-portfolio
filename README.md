@@ -105,7 +105,7 @@ mvn test
 
 ### Exchange Rate Service  
 **Retrieve Crypto Prices**  
-- A REST endpoint returns the current price for given crypto symbols (e.g., BTC, ETH) in a base currency (e.g., USD).   
+- A REST endpoint that returns the current price for given crypto symbols (e.g., BTC, ETH) in a base currency (e.g., USD).   
 
 **Endpoints**  
 - `GET /exchange-rate?symbol={symbol}&base={base}` – Returns the current or last known price in the given base currency.  
@@ -113,7 +113,7 @@ mvn test
 ### Portfolio Service  
 **Manage Portfolios**  
 - Users can create multiple portfolios and add crypto holdings.  
-- CRUD operations: create, update, delete portfolios and holdings.  
+- CRUD operations: create, update, delete portfolios and holdings by its symbol.  
 
 **Portfolio Valuation**  
 - Retrieves the total value of a portfolio in a specified base currency (e.g., USD).  
@@ -132,12 +132,12 @@ mvn test
 
 - **Backend**: Java 17, Spring Boot 3.4.1  
 - **Build Tool**: Maven  
-- **Database**: H2 (in-memory) *(can be replaced with PostgreSQL, MySQL, etc.)*  
+- **Database**: H2 (in-memory) *(could be replaced with PostgreSQL, MySQL, etc.)*  
 - **Persistence**: Hibernate/JPA  
 - **API Communication**: REST (JSON format)  
 - **Testing**:  
   - Unit Tests (`JUnit`, `Mockito`)  
-  - Integration Tests (`WebTestClient`)  
+  - Integration Tests (`WebTestClient`, `MockMvc`)  
 - **Documentation**:  
   - API Documentation: **[View Full API Documentation](#api-documentation)**  
   - **Postman collection generated** from the application and can be found in the file [crypto-portfolio.postman_collection.json](./crypto-portfolio.postman_collection.json).
@@ -277,11 +277,11 @@ GET http://localhost:8080/users/1/portfolios/1/valuation?base=MAD
 ```
 
 #### 4.2 Retrieve Holding
-**Endpoint:** `GET /users/{userId}/portfolios/{portfolioId}/holdings/{holdingId}`
+**Endpoint:** `GET /users/{userId}/portfolios/{portfolioId}/holdings/{symbol}`
 - Retrieves a specific holding by ID.
 
 #### 4.3 Update Holding
-**Endpoint:** `PATCH /users/{userId}/portfolios/{portfolioId}/holdings/{holdingId}`
+**Endpoint:** `PATCH /users/{userId}/portfolios/{portfolioId}/holdings/{symbol}`
 - Updates a holding.
 
 **Request Example:**
@@ -293,7 +293,7 @@ GET http://localhost:8080/users/1/portfolios/1/valuation?base=MAD
 ```
 
 #### 4.4 Remove Holding
-**Endpoint:** `DELETE /users/{userId}/portfolios/{portfolioId}/holdings/{holdingId}`
+**Endpoint:** `DELETE /users/{userId}/portfolios/{portfolioId}/holdings/{symbol}`
 - Removes a holding from a portfolio.
 
 **Request Example:**
