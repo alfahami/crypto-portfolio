@@ -112,7 +112,6 @@ public class ExchangeRateServiceTest {
         .verify();
   }
 
-  @SuppressWarnings("null")
   @Test
   void getAllDataSuccessTest() {
     // Define the mocked response that will be returned by the mock server.

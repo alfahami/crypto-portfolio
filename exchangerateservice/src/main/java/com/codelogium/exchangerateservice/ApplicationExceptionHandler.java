@@ -54,7 +54,6 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 
     }
 
-    @SuppressWarnings("null")
     @Override
     protected Mono<ResponseEntity<Object>> handleMissingRequestValueException(@NonNull MissingRequestValueException ex,
             @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull ServerWebExchange exchange) {
