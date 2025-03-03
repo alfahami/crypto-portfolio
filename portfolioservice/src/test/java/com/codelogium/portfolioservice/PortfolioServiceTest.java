@@ -75,8 +75,8 @@ public class PortfolioServiceTest {
         Holding holding2 = new Holding(2L, "ETH", new BigDecimal("45.12"), portfolio);
 
         portfolio.setHoldings(List.of(holding1, holding2));
-
-        when(userRepository.existsById(1L)).thenReturn(true);
+        
+        when(portfolioRepository.findUserByPortfolioId(10L)).thenReturn(Optional.of(testUser));
         when(portfolioRepository.findByIdAndUserId(10L, 1L)).thenReturn(Optional.of(portfolio));
 
         // Mock API for BTC
@@ -92,7 +92,7 @@ public class PortfolioServiceTest {
                         .setBody("{\"price\": 895.35}"));
 
         // AcT
-        BigDecimal result = portfolioService.valuation(1L, 10L, "EUR");
+        BigDecimal result = portfolioService.valuation(10L, 1L, "EUR");
 
         // Assert
         assertEquals(new BigDecimal("67390.1342"), result);
@@ -105,12 +105,12 @@ public class PortfolioServiceTest {
 
         Portfolio portfolio = new Portfolio(10L, "Tech Guru Investment", testUser, null);
 
-        when(userRepository.existsById(1L)).thenReturn(true);
+        when(portfolioRepository.findUserByPortfolioId(10L)).thenReturn(Optional.of(testUser));
         when(portfolioRepository.findByIdAndUserId(10L, 1L)).thenReturn(Optional.of(portfolio));
 
         // Act
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
-            portfolioService.valuation(1L, 10L, "MAD");
+            portfolioService.valuation(10L, 1L, "MAD");
         });
 
         // Assert

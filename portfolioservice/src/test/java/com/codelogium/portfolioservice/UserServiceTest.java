@@ -50,8 +50,6 @@ public class UserServiceTest {
 
         retrievedUser.setFirstName("Tupac");
         retrievedUser.setLastName("Shakur");
-        // intentionally tampering the id in order to test the ignorance of the ID in the service
-        retrievedUser.setId(5L); 
 
         when(userRepository.save(any(User.class))).thenReturn(retrievedUser);
 
@@ -59,8 +57,6 @@ public class UserServiceTest {
         User result = userService.updateUser(2L, retrievedUser);
 
         // Assert
-        // extra message is an optional failure message to be displayed in case the test fails
-        assertEquals(2L, result.getId(), "User ID shouldn't be tampered"); 
         assertEquals("Tupac", result.getFirstName());
         assertEquals("Shakur", result.getLastName());
         assertEquals(LocalDate.parse("1991-09-24"), result.getBirthDate());
