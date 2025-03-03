@@ -12,7 +12,7 @@ The API consists of two main services:
 - **Portfolio Service** – Manages users, portfolios, and holdings.  
 - **Exchange Rate Service** – Provides cryptocurrency exchange rates using [CoinMarketCap](https://coinmarketcap.com/api/documentation/v1/#section/Quick-Start-Guide).  
 
-### ⚙ Architecture Note  
+### ⚠ Architecture Note  
 While the application follows a modular approach and runs services on separate ports, it does not fully implement a **microservices architecture** due to limited experience in that area.  
 
 ---
@@ -35,7 +35,7 @@ Building this application involved:
 #### ExchangerateService
 - Exploring **reactive programming** concepts using `WebClient` to call an external API.  
 - Writing **unit tests** and **integration tests** using `WebTestClient`.  
-- Learning how to **simulate or integrate** external APIs using `MockWebServer` form [okhttp](https://github.com/square/okhttp) okhttp (this implementation uses **CoinMarketCap**, a real crypto API). 
+- Learning how to **simulate or integrate** external APIs using `MockWebServer` form [okhttp](https://github.com/square/okhttp) (this implementation uses **[CoinMarketCap](https://coinmarketcap.com/api/documentation/v1/#section/Quick-Start-Guide)**, a real crypto API). 
 
 ### **PortfolioService**
 - **Exploring JPA & Hibernate** for efficient data persistence and entity relationships.  
@@ -66,7 +66,6 @@ Building this application involved:
    cd portfolioservice
    mvn clean install
    ```
-
 ---
 
 ## Run Instructions  
@@ -100,10 +99,6 @@ mvn test
 cd portfolioservice
 mvn test
 ```
-
-
-
-
 ---
 
 ## Functional Requirements  
@@ -157,12 +152,6 @@ mvn test
 
 This section provides details endpoints, descriptions, request methods, and sample payloads of the **Crypto Portfolio API** 
 
-### Base URLs
-- **Portfolio Service**: `http://localhost:8080`
-- **Exchange Rate Service**: `http://localhost:8081`
-
----
-
 ### 1. Exchange Rate API
 
 #### 1.1 Get Latest Exchange Rates
@@ -182,7 +171,6 @@ GET http://localhost:8081/exchange-rate/latest
 ```http
 GET http://localhost:8081/exchange-rate?symbol=BTC&base=MAD
 ```
-
 ---
 
 ### 2. User Management
@@ -200,7 +188,6 @@ GET http://localhost:8081/exchange-rate?symbol=BTC&base=MAD
   "profession": "Producer"
 }
 ```
-
 #### 2.2 Retrieve User
 **Endpoint:** `GET /users/{userId}`
 - Retrieves details of a user by ID.
@@ -241,7 +228,6 @@ GET http://localhost:8081/exchange-rate?symbol=BTC&base=MAD
   "name": "Medical Sales Stock"
 }
 ```
-
 #### 3.2 Retrieve Portfolio
 **Endpoint:** `GET /users/{userId}/portfolios/{portfolioId}`
 - Retrieves portfolio details by ID.
@@ -257,7 +243,6 @@ GET http://localhost:8081/exchange-rate?symbol=BTC&base=MAD
   "name": "Shakur Music Investment"
 }
 ```
-
 #### 3.4 Remove Portfolio
 **Endpoint:** `DELETE /users/{userId}/portfolios/{portfolioId}`
 - Deletes a portfolio.
@@ -319,12 +304,11 @@ DELETE http://localhost:8080/users/1/portfolios/1/holdings/3
 ---
 
 #### Notes
-- All endpoints assume a `localhost` setup. Update the base URL for production.
+- All endpoints assume a `localhost` setup. 
 - `DELETE` operations do not return a body but should return `204 No Content`.
 - `PATCH` allows partial updates.
 - Consider adding authentication and validation layers if necessary.
 
-This documentation provides a structured overview of all available API operations for the crypto portfolio service.
 </details>
 
 ## License  
