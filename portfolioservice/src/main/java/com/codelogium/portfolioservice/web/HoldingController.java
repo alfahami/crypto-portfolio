@@ -32,14 +32,14 @@ public class HoldingController {
         return new ResponseEntity<>(holdingService.createHolding(portfolioId, userId, holding), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{holdingId}")
-    public ResponseEntity<Holding> retrieveHolding(@PathVariable Long holdingId, @PathVariable Long portfolioId, @PathVariable Long userId) {
-        return new ResponseEntity<>(holdingService.retrieveHolding(holdingId, portfolioId, userId), HttpStatus.OK);
+    @GetMapping("/{symbol}")
+    public ResponseEntity<Holding> retrieveHolding(@PathVariable String symbol, @PathVariable Long portfolioId, @PathVariable Long userId) {
+        return new ResponseEntity<>(holdingService.retrieveHolding(symbol, portfolioId, userId), HttpStatus.OK);
     }
 
-    @PatchMapping("/{holdingId}")
-    public ResponseEntity<Holding> updateHolding(@PathVariable Long holdingId, @PathVariable Long portfolioId, @PathVariable Long userId, @RequestBody @Valid Holding holding) {
-        return new ResponseEntity<>(holdingService.updateHolding(holdingId, portfolioId, userId, holding),HttpStatus.OK);
+    @PatchMapping("/{symbol}")
+    public ResponseEntity<Holding> updateHolding(@PathVariable String symbol, @PathVariable Long portfolioId, @PathVariable Long userId, @RequestBody @Valid Holding holding) {
+        return new ResponseEntity<>(holdingService.updateHolding(symbol, portfolioId, userId, holding),HttpStatus.OK);
     }
 
     @GetMapping("/all")
@@ -47,9 +47,9 @@ public class HoldingController {
         return new ResponseEntity<>(holdingService.retrieveHoldingsByPortfolioId(portfolioId, userId), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{holdingId}")
-    public ResponseEntity<HttpStatus> removeHolding(@PathVariable Long holdingId, @PathVariable Long portfolioId, @PathVariable Long userId) {
-        holdingService.removeHolding(holdingId, portfolioId, userId);
+    @DeleteMapping("/{symbol}")
+    public ResponseEntity<HttpStatus> removeHolding(@PathVariable String symbol, @PathVariable Long portfolioId, @PathVariable Long userId) {
+        holdingService.removeHolding(symbol, portfolioId, userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

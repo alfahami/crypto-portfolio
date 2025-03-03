@@ -17,4 +17,6 @@ public interface HoldingRepository extends JpaRepository<Holding, Long> {
      * and user. Helps enforce ownership and prevents unauthorized access
      */
     Optional<Holding> findByIdAndPortfolioIdAndPortfolioUserId(Long holdingId, Long portfolioId, Long userId);
+
+    Optional<Holding> findBySymbol(String symbol);
 }
