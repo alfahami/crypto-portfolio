@@ -278,7 +278,7 @@ GET http://localhost:8080/users/1/portfolios/1/valuation?base=MAD
 
 #### 4.2 Retrieve Holding
 **Endpoint:** `GET /users/{userId}/portfolios/{portfolioId}/holdings/{symbol}`
-- Retrieves a specific holding by ID.
+- Retrieves a specific holding by its symbol.
 
 #### 4.3 Update Holding
 **Endpoint:** `PATCH /users/{userId}/portfolios/{portfolioId}/holdings/{symbol}`
