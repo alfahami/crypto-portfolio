@@ -4,6 +4,7 @@ import static com.codelogium.portfolioservice.util.EntityUtils.*;
 
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.codelogium.portfolioservice.entity.Holding;
@@ -35,8 +36,13 @@ public class HoldingServiceImp implements HoldingService {
 
         // Setting the relation portfolio <- holding
         holding.setPortfolio(portfolio);
-        
-        return this.holdingRepository.save(holding);
+
+        // handling unique constraint violation of symbok
+        try {
+            return holdingRepository.save(holding);
+        } catch(DataIntegrityViolationException e) {
+            throw new ResourceNotFoundException("You already have a " + holding.getSymbol() + " holding.");
+        }
     }
 
     @Override
@@ -56,12 +62,7 @@ public class HoldingServiceImp implements HoldingService {
     @Override
     public Holding updateHolding(String symbol, Long portfolioId, Long userId, Holding newHolding) {
 
-        // Validata user, check portfolio ownership
-        validateUserAndChecksOwnership(portfolioId, userId);
-
-        // Ensure ownership of user -> portfolio -> holding
-        Portfolio portfolio = PortfolioServiceImp.unwrapPortfolio(portfolioId,
-                portfolioRepository.findByIdAndUserId(portfolioId, userId));
+        Portfolio portfolio = getValidatedPortfolio(portfolioId, userId);
 
         Holding existingHolding = unwrapHoldingBySymbol(symbol, portfolio);
 
@@ -88,16 +89,21 @@ public class HoldingServiceImp implements HoldingService {
     @Transactional
     @Override
     public void removeHolding(String symbol, Long portfolioId, Long userId) {
-        // Validata user, check user->portfolio ownership
-        validateUserAndChecksOwnership(portfolioId, userId);
-
-        Portfolio portfolio = PortfolioServiceImp.unwrapPortfolio(portfolioId,
-                portfolioRepository.findByIdAndUserId(portfolioId, userId));
+        Portfolio portfolio = getValidatedPortfolio(portfolioId, userId);
 
         Holding holding = unwrapHoldingBySymbol(symbol, portfolio);
         portfolio.getHoldings().remove(holding); // triggers orphanRemoval automatically
-        // holdingRepository.delete(holding); // no need to manually call this since
-        // orphanRemoval is set to true in the entity portfolio field
+
+        // holdingRepository.delete(holding); // no need to manually call this since orphanRemoval is set to true in the entity portfolio field
+    }
+
+    private Portfolio getValidatedPortfolio(Long portfolioId, Long userId) {
+        // Validata user, check portfolio ownership
+        validateUserAndChecksOwnership(portfolioId, userId);
+
+        // Ensure ownership of user -> portfolio and return portfolio
+        return PortfolioServiceImp.unwrapPortfolio(portfolioId,
+                portfolioRepository.findByIdAndUserId(portfolioId, userId));
     }
 
     private void validateUserAndChecksOwnership(Long portfolioId, Long userId) {
