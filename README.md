@@ -337,7 +337,6 @@ GET http://localhost:8080/users/1/portfolios/1/valuation?base=MAD
 ```http
 DELETE http://localhost:8080/users/1/portfolios/1/holdings/3
 ```
-
 ---
 
 #### Notes
@@ -346,7 +345,6 @@ DELETE http://localhost:8080/users/1/portfolios/1/holdings/3
 - `PATCH` allows partial updates.
 - Consider adding authentication and validation layers if necessary.
 </details>
-<br>
 
 ## 💡 **Contribute!**  
 Feel free to reach out for improvements in design and code quality.  
