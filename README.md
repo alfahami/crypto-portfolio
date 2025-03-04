@@ -3,7 +3,8 @@
 Built with **Spring Boot** and **WebClient** for seamless integration with external APIs.  
 
 ## Overview  
-The **Crypto Portfolio API** allows users to manage portfolios of cryptocurrency holdings. Users can create multiple portfolios, add holdings to each portfolio, and track their valuations in different currencies. 
+The **Crypto Portfolio API** allows users to manage portfolios of cryptocurrency holdings.
+Users can create multiple portfolios, add holdings to each portfolio, and track their valuations in different currencies. 
 
 The solution integrates with an exchange rate service running on port `8801` and provides portfolio management endpoints on port `8080`.
 
@@ -32,7 +33,7 @@ In a production environment, appropriate authentication mechanisms (e.g., JWT, O
 ## Development Challenge  
 Building this application involved:
 
-#### ExchangerateService
+### ExchangerateService
 - Exploring **reactive programming** concepts using `WebClient` to call an external API.  
 - Writing **unit tests** and **integration tests** using `WebTestClient`.  
 - Learning how to **simulate or integrate** external APIs using `MockWebServer` form [okhttp](https://github.com/square/okhttp) (this implementation uses **[CoinMarketCap](https://coinmarketcap.com/api/documentation/v1/#section/Quick-Start-Guide)**, a real crypto API). 
@@ -45,6 +46,42 @@ Building this application involved:
 - **Writing unit and integration tests** using `JUnit`, `Mockito`, and `Spring Boot Test`.  
 - **Implementing global exception handling** using `@ControllerAdvice` to catch and handle errors gracefully.  
 - **Custom error responses** for better clarity and user experience when exceptions occur in the API.
+  
+### General Challenges  
+
+#### **1. Validation and Authorization**  
+When managing holdings, I needed to validate the user and ensure the relationship **user → portfolio → holding** was respected.  
+
+##### **How I Ensured a User Manages Their Own Holdings**  
+To guarantee that a user only manages holdings within their own portfolio, I had to design a validation mechanism while avoiding circular dependencies and respecting the **Single Responsibility Principle (SRP)**.  
+
+##### **Approaches I Tried:**  
+- **Injecting `UserRepository` directly into `HoldingService`**:  
+  - I used this approach solely for validation.  
+- **Injecting `PortfolioServiceImp` into `HoldingService`**:  
+  - I initially considered this, but it led to tight coupling between services.  
+- **Creating a `ValidationAuthorizationService`**:  
+  - I introduced a dedicated service to handle validation.  
+  - However, this required injecting both `UserRepository` and `PortfolioRepository`, which is practically the same as the last one I sticked with.
+
+#### **2. Preventing ID Tampering**  
+When updating an object, I wanted to prevent the risk of an ID mismatch between the URI and the request body.  
+
+##### **My Solution:**  
+- I ignored the ID from the request body.  
+- I retrieved the entity using the ID from the URI.  
+- I performed validation and applied updates only to the retrieved object.  
+
+#### **3. Managing `MockWebServer` Between Tests**  
+For end-to-end testing, I used `MockWebServer` to simulate external services, such as an **exchange rate service**.  
+
+##### **Best Practices I Followed:**  
+- **Using `@BeforeAll` and `@AfterAll`**:  
+  - I started the server once before all tests and shut it down afterward to prevent unnecessary restarts.  
+- **Handling Requests Properly:**  
+  - I made sure each test enqueued new responses to maintain predictable behavior.  
+- **Avoiding Unfinished Requests:**  
+  - Since only one test relied on external service in portfolio service, I didn’t need to manually clear pending requests in the mocked server.  
 ---
 
 ## Build Instructions  
