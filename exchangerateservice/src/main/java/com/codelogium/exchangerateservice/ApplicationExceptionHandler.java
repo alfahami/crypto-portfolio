@@ -55,7 +55,7 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
     }
 
     @Override
-    protected Mono<ResponseEntity<Object>> handleMissingRequestValueException(@NonNull MissingRequestValueException ex,
+    protected @NonNull Mono<ResponseEntity<Object>> handleMissingRequestValueException(@NonNull MissingRequestValueException ex,
             @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull ServerWebExchange exchange) {
 
         ErrorResponse error = new ErrorResponse(Arrays.asList(ex.getReason()));

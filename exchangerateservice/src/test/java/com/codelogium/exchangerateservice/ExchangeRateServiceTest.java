@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -117,7 +118,8 @@ public class ExchangeRateServiceTest {
     // Define the mocked response that will be returned by the mock server.
     String mockResponse = getMockedResponse();
 
-    // Enqueue a mock response to be returned when the WebClient performs the GET request.
+    // Enqueue a mock response to be returned when the WebClient performs the GET
+    // request.
     mockWebServer.enqueue(
         new MockResponse().setResponseCode(HttpStatus.OK.value())
             .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -127,9 +129,12 @@ public class ExchangeRateServiceTest {
     Mono<ResponseEntity<String>> result = exchangeRateService.getAllData();
 
     // Verify that the result matches the expected response. StepVerifier is used for reactive streams.
+    // Using Optional to safely check if the response body is null otherwise @SuppressWarnings("null") would suppress the warning
     StepVerifier.create(result)
-        .expectNextMatches(responseData -> responseData.getBody().contains(mockResponse)).verifyComplete();
-
+        .expectNextMatches((responseData -> Optional.ofNullable(responseData.getBody())
+            .map(body -> body.contains(mockResponse))
+            .orElse(false)))
+        .verifyComplete();
   }
 
   @Test
@@ -164,7 +169,8 @@ public class ExchangeRateServiceTest {
             .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
     Mono<ResponseEntity<String>> result = exchangeRateService.getAllData();
-    // Done in the sake of learning, checking the returned message that cmc defined themselves
+    // Done in the sake of learning, checking the returned message that cmc defined
+    // themselves
     StepVerifier.create(result)
         .expectErrorMatches(throwable -> {
           if (throwable instanceof CryptoException) {
