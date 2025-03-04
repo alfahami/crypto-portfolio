@@ -41,15 +41,25 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
                         .build())
                 .retrieve()
                 .onStatus(HttpStatusCode::isError,
-                        clientResponse -> CryptoException.handleErrorResponse(clientResponse, base))
+                        clientResponse -> CryptoException.handleErrorResponse(clientResponse, symbol, base))
                 .bodyToMono(JsonNode.class)
                 .map(response -> {
-                    JsonNode quote = response.path("data").path(symbol).path("quote").path(base);
+                    // Check if the symbol exists in the response
+                    JsonNode symbolNode = response.path("data").path(symbol);
+                    if (symbolNode.isMissingNode()) {
+                        // If the symbol is not found, throw an error indicating it's invalid
+                        throw new CryptoException(HttpStatus.BAD_REQUEST, "Invalid symbol: " + symbol);
+                    }
+
+                    JsonNode quote = symbolNode.path("quote").path(base);
 
                     BigDecimal price = quote.has("price") ? quote.get("price").decimalValue() : BigDecimal.ZERO;
-                    // explicitely handling base error as cmc give response with 0 price value
-                    if (price.compareTo(BigDecimal.ZERO) == 0)
-                        throw new CryptoException(HttpStatus.BAD_REQUEST, "Invalid Symbol: " + symbol);
+
+                    // Explicitly handle base error as CMC may give a 0 price value if the base currency is not supported for the symbol
+                    if (price.compareTo(BigDecimal.ZERO) == 0) {
+                        throw new CryptoException(HttpStatus.BAD_REQUEST,
+                                "Base currency " + base + " is not supported for symbol " + symbol);
+                    }
 
                     return new CryptoResponseMapper(symbol, base, price);
                 });
@@ -66,7 +76,7 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
                 .retrieve()
                 .onStatus(
                         HttpStatusCode::isError,
-                        clientResponse -> CryptoException.handleErrorResponse(clientResponse, null))
+                        clientResponse -> CryptoException.handleErrorResponse(clientResponse, null, null))
                 .toEntity(String.class)
                 .timeout(Duration.ofMillis(10000));
         return result;
