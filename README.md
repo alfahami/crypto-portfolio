@@ -345,8 +345,12 @@ DELETE http://localhost:8080/users/1/portfolios/1/holdings/3
 - `DELETE` operations do not return a body but should return `204 No Content`.
 - `PATCH` allows partial updates.
 - Consider adding authentication and validation layers if necessary.
-
 </details>
+<br>
+
+## 💡 **Contribute!**  
+Feel free to reach out for improvements in design and code quality.  
+You’re welcome to create PRs to add new functionalities!
 
 ## License  
 This project is open-source and available under the **MIT License**.
