@@ -67,7 +67,8 @@ To guarantee that a user only manages holdings within their own portfolio, I had
 #### **2. Preventing ID Tampering**  
 When updating an object, I wanted to prevent the risk of an ID mismatch between the URI and the request body.  
 
-##### **My Solution:**  
+##### **My Solution:** 
+- I initially tried to ignore the ID in the request body by setting the updated object's ID to match the retrieved one. However, I found it more appropriate to simply update the retrieved object and save it.
 - I ignored the ID from the request body.  
 - I retrieved the entity using the ID from the URI.  
 - I performed validation and applied updates only to the retrieved object.  
