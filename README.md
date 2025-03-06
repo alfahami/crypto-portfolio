@@ -336,7 +336,7 @@ GET http://localhost:8080/users/1/portfolios/1/valuation?base=MAD
 
 **Request Example:**
 ```http
-DELETE http://localhost:8080/users/1/portfolios/1/holdings/3
+DELETE http://localhost:8080/users/1/portfolios/1/holdings/BTC
 ```
 ---
 
