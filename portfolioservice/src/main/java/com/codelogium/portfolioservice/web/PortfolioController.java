@@ -57,7 +57,7 @@ public class PortfolioController {
     }
 
     @DeleteMapping("/{portfolioId}")
-    public ResponseEntity<HttpStatus> removePortfolio(@PathVariable Long userId, @PathVariable Long portfolioId) {
+    public ResponseEntity<Void> removePortfolio(@PathVariable Long userId, @PathVariable Long portfolioId) {
         portfolioService.removePortfolio(portfolioId, userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

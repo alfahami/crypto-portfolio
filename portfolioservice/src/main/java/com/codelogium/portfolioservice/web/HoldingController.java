@@ -48,7 +48,7 @@ public class HoldingController {
     }
 
     @DeleteMapping("/{symbol}")
-    public ResponseEntity<HttpStatus> removeHolding(@PathVariable String symbol, @PathVariable Long portfolioId, @PathVariable Long userId) {
+    public ResponseEntity<Void> removeHolding(@PathVariable String symbol, @PathVariable Long portfolioId, @PathVariable Long userId) {
         holdingService.removeHolding(symbol, portfolioId, userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
