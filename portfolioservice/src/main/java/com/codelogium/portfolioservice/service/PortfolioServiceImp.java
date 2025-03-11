@@ -75,10 +75,16 @@ public class PortfolioServiceImp implements PortfolioService {
     @Override
     public void removePortfolio(Long portfolioId, Long userId) {
 
-        UserServiceImp.unwrapUser(userId, userRepository.findById(userId));
+        User user = UserServiceImp.unwrapUser(userId, userRepository.findById(userId));
 
         Portfolio portfolio = unwrapPortfolio(portfolioId, portfolioRepository.findByIdAndUserId(portfolioId, userId));
-        portfolioRepository.delete(portfolio);
+
+        user.getPortfolios().remove(portfolio); // remove the portfolio form its user
+        userRepository.save(user); // Update the relationship
+
+        // No need to call this as orphan removal is set to true and will take care of deleting the child portfolio
+        // portfolioRepository.delete(portfolio); // Delete portfolio itself
+
     }
 
     @Override
